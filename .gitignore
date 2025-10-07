@@ -6,3 +6,7 @@ src/cpp_deneme
 src/examples
 src/ros_tutorials
 bag_files
+terrain
+eeprom.bin
+mav.*
+logs

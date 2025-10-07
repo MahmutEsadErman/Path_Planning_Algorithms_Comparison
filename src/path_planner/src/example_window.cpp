@@ -13,13 +13,12 @@ ExampleWindow::ExampleWindow(rclcpp::Node::SharedPtr & node_handle, QWidget *par
     // Ensure the placeholder widget from the UI (named "grid_widget") has a layout
     // and add our custom GridWidget into it. Give the placeholder as the parent so
     // Qt takes ownership and handles lifetime automatically.
-    auto layout = grid_widget->layout();
-    if (!layout) {
+    if (!grid_widget->layout()) {
         auto vlayout = new QVBoxLayout(grid_widget);
         vlayout->setContentsMargins(0, 0, 0, 0);
-        layout = vlayout;
+        grid_widget->setLayout(vlayout);
     }
 
     auto canvas = new GridWidget(nh_, grid_widget);
-    layout->addWidget(canvas);
+    grid_widget->layout()->addWidget(canvas);
 }

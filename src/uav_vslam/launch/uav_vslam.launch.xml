@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="pkg_name" default="uav_vslam" description="The name of the package containing the Launch and RViz files."/>
+
+    <!-- Launch Gazebo with the iris_runway world -->
+    <include file="$(find-pkg-share ros_gz_sim)/launch/gz_sim.launch.py">
+        <arg name="gz_args" value="-v4 -r iris_runway.sdf"/>
+    </include>
+
+    <!-- Start the MAVROS node to communicate with the simulated vehicle -->
+    <include file="$(find-pkg-share mavros)/launch/apm.launch">
+        <arg name="fcu_url" value="udp://:14550@"/>
+    </include>
+    
+    <!-- Publish the robot state to TF -->
+    <node pkg="robot_state_publisher"
+          exec="robot_state_publisher"
+          name="robot_state_publisher">
+        <param name="use_sim_time" value="true" />
+    </node>
+
+    <!-- Bridge Gazebo topics to ROS 2 topics -->
+    <node pkg="ros_gz_bridge"
+          exec="parameter_bridge"
+          args="/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock 
+          /model/iris_with_gimbal/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model 
+          /world/iris_runway/model/iris_with_gimbal/model/gimbal/link/pitch_link/sensor/camera/image@sensor_msgs/msg/Image@gz.msgs.Image
+          /keyboard/keypress@std_msgs/msg/Int32@gz.msgs.Int32">
+    </node>
+
+    <!-- Launch RViz with a predefined configuration -->
+    <node pkg="rviz2"
+          exec="rviz2"
+          args="-d $(find-pkg-share $(var pkg_name))/rviz/drone_sim.rviz" />
+
+</launch>

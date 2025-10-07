@@ -17,6 +17,7 @@ RUN apt-get update && \
 
 # Switch from root to user
 USER $USERNAME
+ENV USER=$USERNAME
 
 # Add user to video group to allow access to webcam
 RUN sudo usermod --append --groups video $USERNAME
@@ -46,3 +47,35 @@ RUN sudo apt-get install -y python3-pip
 RUN sudo apt-get update && \
     sudo apt install -y qt6-base-dev
 
+RUN sudo apt-get install -y \
+    ros-${ROS_DISTRO}-image-geometry \
+    ros-${ROS_DISTRO}-cv-bridge \
+    ros-${ROS_DISTRO}-vision-msgs \
+    ros-${ROS_DISTRO}-image-pipeline
+
+WORKDIR /home/$USERNAME
+# Install ArduPilot
+RUN git clone https://github.com/ArduPilot/ardupilot.git ardupilot && \
+    cd ardupilot && \
+    Tools/environment_install/install-prereqs-ubuntu.sh -y && \
+    . ~/.profile && \
+    git submodule update --init --recursive && \
+    ./waf configure --board sitl --debug && \
+    ./waf copter
+
+# Install Ardupilot_GAZEBO
+RUN git clone https://github.com/ArduPilot/ardupilot_gazebo.git ardupilot_gazebo && \
+    cd ardupilot_gazebo && \
+    git submodule update --init --recursive && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j4
+
+RUN sudo apt-get install ros-jazzy-mavros ros-jazzy-mavros-extras -l -y && \
+    chmod +x ./install_geographiclib_datasets.sh && \
+    sudo ./install_geographiclib_datasets.sh
+
+# TCP 5760 is what the sim exposes by default
+EXPOSE 5760/tcp
+EXPOSE 14550/udp

@@ -4,29 +4,16 @@
   "runArgs": [
     "--name=ros2_jazzy",
     "--network=host",
+    "--env", "WAYLAND_DISPLAY=",
     "--env", "DISPLAY=${env:DISPLAY}",
     "--env=QT_X11_NO_MITSHM=1",
-    "--env=XAUTHORITY=${localEnv:XAUTHORITY}",
     "--volume", "/tmp/.X11-unix:/tmp/.X11-unix:rw",
     "--volume", "/etc/localtime:/etc/localtime:ro",
     "--volume", "/dev/bus/usb:/dev/bus/usb",
     "--device", "/dev/dri",
     "--volume", "${localEnv:HOME}/.Xauthority:/tmp/.Xauthority:ro",
-    "-v", "${localEnv:XAUTHORITY}:${localEnv:XAUTHORITY}",
     "--privileged"
 ],
-  // "runArgs": [
-  // "--name=ros2_jazzy",
-  //   "--privileged",
-  //   "--network=host",
-  //   "-v", "/tmp/.X11-unix:/tmp/.X11-unix:rw",
-  //   "--env=DISPLAY=${localEnv:DISPLAY}",
-  //   "--env=QT_X11_NO_MITSHM=1",
-  //   "--env=XAUTHORITY=${localEnv:XAUTHORITY}",
-  //   "-v", "${localEnv:XAUTHORITY}:${localEnv:XAUTHORITY}",
-  //   "--device=/dev/dri:/dev/dri",
-  //   "--memory=6g", "--cpus=4"
-  // ],
   "containerEnv": {
     "DISPLAY": "${localEnv:DISPLAY}",
     "XAUTHORITY": "/tmp/.Xauthority",
@@ -38,6 +25,13 @@
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/devcontainers/features/python:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cmake-tools"
+      ]
+    }
   }
 
 }
