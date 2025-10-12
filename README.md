@@ -23,3 +23,6 @@ ros2 run ros_gz_bridge parameter_bridge /world/iris_runway/model/iris_with_gimba
 
 ros2 launch mavros apm.launch fcu_url:=udp://:14550@
 
+
+ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: true}"
+

@@ -73,7 +73,8 @@ RUN git clone https://github.com/ArduPilot/ardupilot_gazebo.git ardupilot_gazebo
     make -j4
 
 RUN sudo apt-get install ros-jazzy-mavros ros-jazzy-mavros-extras -l -y && \
-    chmod +x ./install_geographiclib_datasets.sh && \
+    wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh && \
+    chmod a+x ./install_geographiclib_datasets.sh && \
     sudo ./install_geographiclib_datasets.sh
 
 # TCP 5760 is what the sim exposes by default

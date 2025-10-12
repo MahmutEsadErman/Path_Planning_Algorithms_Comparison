@@ -31,11 +31,11 @@ endif()
 
 ament_package()
 
-# Install launch and rviz directories
+# Install launch and config directories
 install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(DIRECTORY rviz
+install(DIRECTORY config
   DESTINATION share/${PROJECT_NAME}
 )
