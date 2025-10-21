@@ -5,37 +5,37 @@
   gz_type_name: "gz.msgs.Clock"
   direction: GZ_TO_ROS
 
-# Joint states for the UAV model (including gimbal)
-- ros_topic_name: "/joint_states"
-  gz_topic_name: "/world/iris_runway/model/iris_with_gimbal/joint_state"
-  ros_type_name: "sensor_msgs/msg/JointState"
-  gz_type_name: "gz.msgs.Model"
+# Pose information
+- ros_topic_name: "/simulation_pose_info"
+  gz_topic_name: "/world/$(var world_name)/pose/info"
+  ros_type_name: "geometry_msgs/msg/PoseArray"
+  gz_type_name: "gz.msgs.Pose_V"
   direction: GZ_TO_ROS
 
 # Camera image from gimbal
 - ros_topic_name: "/camera/image"
-  gz_topic_name: "/world/iris_runway/model/iris_with_gimbal/model/gimbal/link/pitch_link/sensor/camera/image"
+  gz_topic_name: "/world/$(var world_name)/model/iris_with_gimbal/model/gimbal/link/pitch_link/sensor/camera/image"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
 
 # Camera info
 - ros_topic_name: "/camera/camera_info"
-  gz_topic_name: "/world/iris_runway/model/iris_with_gimbal/model/gimbal/link/pitch_link/sensor/camera/camera_info"
+  gz_topic_name: "/world/$(var world_name)/model/iris_with_gimbal/model/gimbal/link/pitch_link/sensor/camera/camera_info"
   ros_type_name: "sensor_msgs/msg/CameraInfo"
   gz_type_name: "gz.msgs.CameraInfo"
   direction: GZ_TO_ROS
 
 # IMU data
 - ros_topic_name: "/imu"
-  gz_topic_name: "/world/iris_runway/model/iris_with_gimbal/model/iris_with_standoffs/link/imu_link/sensor/imu_sensor/imu"
+  gz_topic_name: "/world/$(var world_name)/model/iris_with_gimbal/model/iris_with_standoffs/link/imu_link/sensor/imu_sensor/imu"
   ros_type_name: "sensor_msgs/msg/Imu"
   gz_type_name: "gz.msgs.IMU"
   direction: GZ_TO_ROS
 
 # World statistics
 - ros_topic_name: "/world/stats"
-  gz_topic_name: "/world/iris_runway/stats"
+  gz_topic_name: "/world/$(var world_name)/stats"
   ros_type_name: "ros_gz_interfaces/msg/WorldStatistics"
   gz_type_name: "gz.msgs.WorldStatistics"
   direction: GZ_TO_ROS

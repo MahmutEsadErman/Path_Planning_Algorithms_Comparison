@@ -26,3 +26,5 @@ ros2 launch mavros apm.launch fcu_url:=udp://:14550@
 
 ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: true}"
 
+ros2 launch uav_vslam uav_vslam.launch.py
+

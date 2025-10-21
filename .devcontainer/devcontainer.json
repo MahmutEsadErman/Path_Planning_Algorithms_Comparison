@@ -7,18 +7,22 @@
     "--env", "WAYLAND_DISPLAY=",
     "--env", "DISPLAY=${env:DISPLAY}",
     "--env=QT_X11_NO_MITSHM=1",
+    "--runtime=nvidia",
     "--volume", "/tmp/.X11-unix:/tmp/.X11-unix:rw",
     "--volume", "/etc/localtime:/etc/localtime:ro",
     "--volume", "/dev/bus/usb:/dev/bus/usb",
-    "--device", "/dev/dri",
     "--volume", "${localEnv:HOME}/.Xauthority:/tmp/.Xauthority:ro",
+    "--volume", "/run/user/1000:/run/user/1000",
+    "--device", "/dev/dri",
+    "--gpus", "all",
     "--privileged"
 ],
   "containerEnv": {
     "DISPLAY": "${localEnv:DISPLAY}",
     "XAUTHORITY": "/tmp/.Xauthority",
     "QT_X11_NO_MITSHM": "1",
-    "OGRE_RTT_MODE": "Copy"
+    "OGRE_RTT_MODE": "Copy",
+    "XDG_RUNTIME_DIR": "/run/user/1000"
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/${localWorkspaceFolderBasename},type=bind",
   "workspaceFolder": "/${localWorkspaceFolderBasename}",

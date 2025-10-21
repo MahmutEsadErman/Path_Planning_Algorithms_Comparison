@@ -13,9 +13,22 @@ find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-# find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED)
 
 
+add_executable(save_video src/save_video.cpp)
+ament_target_dependencies(save_video rclcpp std_msgs sensor_msgs cv_bridge image_transport ament_index_cpp)
+target_link_libraries(save_video ${OpenCV_LIBS})
+
+add_executable(detect_features src/detect_features_from_video.cpp)
+ament_target_dependencies(detect_features rclcpp std_msgs sensor_msgs cv_bridge image_transport ament_index_cpp)
+target_link_libraries(detect_features ${OpenCV_LIBS})
+
+install(TARGETS
+   save_video
+   detect_features
+   DESTINATION lib/${PROJECT_NAME}
+ )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

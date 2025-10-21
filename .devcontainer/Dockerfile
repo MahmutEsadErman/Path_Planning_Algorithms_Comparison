@@ -20,7 +20,7 @@ USER $USERNAME
 ENV USER=$USERNAME
 
 # Add user to video group to allow access to webcam
-RUN sudo usermod --append --groups video $USERNAME
+RUN sudo usermod --append --groups video render $USERNAME
 
 # Update all packages
 RUN sudo apt update && sudo apt upgrade -y
@@ -63,16 +63,27 @@ RUN git clone https://github.com/ArduPilot/ardupilot.git ardupilot && \
     ./waf configure --board sitl --debug && \
     ./waf copter
 
+
 # Install Ardupilot_GAZEBO
 RUN git clone https://github.com/ArduPilot/ardupilot_gazebo.git ardupilot_gazebo && \
+    sudo apt update && \
+    sudo apt install -y wget lsb-release gnupg curl && \
+    sudo curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null && \
+    sudo apt update && \
+    sudo apt install -y gz-harmonic libgz-sim8-dev rapidjson-dev && \
+    sudo apt install -y libopencv-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-bad gstreamer1.0-libav gstreamer1.0-gl && \
+    export GZ_VERSION=harmonic && \
     cd ardupilot_gazebo && \
-    git submodule update --init --recursive && \
     mkdir build && \
     cd build && \
-    cmake .. && \
-    make -j4
+    cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo && \
+    make -j4 && \
+    echo 'export GZ_SIM_SYSTEM_PLUGIN_PATH=$HOME/ardupilot_gazebo/build:${GZ_SIM_SYSTEM_PLUGIN_PATH}' >> ~/.bashrc && \
+    echo 'export GZ_SIM_RESOURCE_PATH=$HOME/ardupilot_gazebo/models:$HOME/ardupilot_gazebo/worlds:${GZ_SIM_RESOURCE_PATH}' >> ~/.bashrc && \
+    echo 'export GZ_SIM_RESOURCE_PATH=$/ros2_tutorials/new_models:${GZ_SIM_RESOURCE_PATH}' >> ~/.bashrc
 
-RUN sudo apt-get install ros-jazzy-mavros ros-jazzy-mavros-extras -l -y && \
+RUN sudo apt-get install ros-jazzy-mavros ros-jazzy-mavros-extras -y && \
     wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh && \
     chmod a+x ./install_geographiclib_datasets.sh && \
     sudo ./install_geographiclib_datasets.sh
@@ -80,3 +91,12 @@ RUN sudo apt-get install ros-jazzy-mavros ros-jazzy-mavros-extras -l -y && \
 # TCP 5760 is what the sim exposes by default
 EXPOSE 5760/tcp
 EXPOSE 14550/udp
+
+# nvidia-container-runtime
+ENV NVIDIA_VISIBLE_DEVICES \
+    ${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES \
+    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
+
+
+RUN sudo apt-get install -y nautilus gedit
