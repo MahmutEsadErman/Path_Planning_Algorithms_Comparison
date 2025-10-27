@@ -45,37 +45,20 @@ class AttitudePublisher(Node):
         self.target_pitch_deg = 0.0 # Target pitch in degrees
         self.target_yaw_deg = 0.0   # Target yaw in degrees
 
-        # self.move_up()
-        # print("Taking off...")
-        # time.sleep(3)
-        # self.hover()
-        # self.move_forward()
-        # time.sleep(3)
-        # self.hover()
-        # self.turn_left()
-        # time.sleep(1)
-        # self.move_forward()
-        # time.sleep(2)
-        # self.hover()
-        # self.turn_left()
-        # time.sleep(1)
-        # self.move_forward()
-        # time.sleep(2)
-        # self.move_down()
-        # time.sleep(2)
+
         self.start = time.time()
 
     def timer_callback(self):
-        if self.start + 5 > time.time():
-            self.move_up()
-            print("Taking off...")
-        elif self.start + 10 > time.time() > self.start + 5:
-            self.hover()
-            self.move_forward()
-            print("Moving forward...")
-        elif self.start + 12 > time.time():
-            self.turn_left()
-            print("Turning left...")
+        # if self.start + 5 > time.time():
+        self.move_up()
+        #     print("Taking off...")
+        # elif self.start + 10 > time.time() > self.start + 5:
+        #     self.hover()
+        #     self.move_forward()
+        #     print("Moving forward...")
+        # elif self.start + 12 > time.time():
+        #     self.turn_left()
+        #     print("Turning left...")
         self.send_attitude(self.target_roll_deg, self.target_pitch_deg, self.target_yaw_deg, self.thrust_value)
 
     def send_attitude(self, roll_deg, pitch_deg, yaw_deg, thrust):

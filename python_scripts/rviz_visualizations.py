@@ -6,7 +6,6 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPo
 
 from geometry_msgs.msg import PoseStamped, PoseArray
 from nav_msgs.msg import Path
-from geographic_msgs.msg import GeoPointStamped
 
 class RvizVisualizationsNode(Node):
     """
@@ -46,9 +45,10 @@ class RvizVisualizationsNode(Node):
         # Give publishers time to establish connections
         self.get_logger().info("Waiting for publishers to be ready...")
         
-        import time
-        time.sleep(2)
-
+        # Initialize drone_pose
+        self.drone_pose = None
+        self.starting_point = None
+        
         # Timer to publish at 1Hz (required for attitude control)
         self.timer = self.create_timer(1, self.send_path)
 
@@ -64,8 +64,20 @@ class RvizVisualizationsNode(Node):
     
     def send_path(self):
         """Sends the path data to MAVROS."""
+        # Wait until we have received the first pose
+        if self.drone_pose is None:
+            return
+        
+        # Set starting point on first valid pose
+        if self.starting_point is None:
+            self.starting_point = self.drone_pose
+            return
+        
         stamped_pose = PoseStamped()
-        stamped_pose.pose = self.drone_pose
+        stamped_pose.pose.position.x = self.drone_pose.position.x - self.starting_point.position.x
+        stamped_pose.pose.position.y = self.drone_pose.position.y - self.starting_point.position.y
+        stamped_pose.pose.position.z = self.drone_pose.position.z - self.starting_point.position.z
+        stamped_pose.pose.orientation = self.drone_pose.orientation
         stamped_pose.header.frame_id = "map"
         stamped_pose.header.stamp = self.get_clock().now().to_msg()
         self.path_msg.poses.append(stamped_pose)

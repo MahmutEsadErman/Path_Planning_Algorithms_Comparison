@@ -20,7 +20,7 @@ USER $USERNAME
 ENV USER=$USERNAME
 
 # Add user to video group to allow access to webcam
-RUN sudo usermod --append --groups video render $USERNAME
+RUN sudo usermod --append --groups video $USERNAME
 
 # Update all packages
 RUN sudo apt update && sudo apt upgrade -y
@@ -100,3 +100,19 @@ ENV NVIDIA_DRIVER_CAPABILITIES \
 
 
 RUN sudo apt-get install -y nautilus gedit
+
+# RUN mkdir ~/opencv_with_contrib_build && cd ~/opencv_with_contrib_build && \
+#     git clone https://github.com/opencv/opencv.git && \
+#     git clone https://github.com/opencv/opencv_contrib.git && \
+#     cd opencv && \
+#     git checkout 4.6.0 && \
+#     cd ../opencv_contrib && \
+#     git checkout 4.6.0 && \
+#     cd .. && cmake -D CMAKE_BUILD_TYPE=Release \
+#       -D CMAKE_INSTALL_PREFIX=/usr/local \
+#       -D OPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules \
+#       -D BUILD_LIST=core,features2d,highgui,imgcodecs,xfeatures2d,videoio \
+#       opencv && \
+#     make -j5 && \
+#     sudo make install
+    

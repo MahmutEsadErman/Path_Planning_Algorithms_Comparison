@@ -14,6 +14,7 @@
     "--volume", "${localEnv:HOME}/.Xauthority:/tmp/.Xauthority:ro",
     "--volume", "/run/user/1000:/run/user/1000",
     "--device", "/dev/dri",
+    "--device", "/dev/input:/dev/input",
     "--gpus", "all",
     "--privileged"
 ],
