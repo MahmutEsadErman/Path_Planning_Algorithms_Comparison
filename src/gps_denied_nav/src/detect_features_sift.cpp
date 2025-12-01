@@ -6,7 +6,7 @@
 int main(int argc, char* argv[])
 {
   // Video file path
-  std::string video_path = "output_video.mp4";
+  std::string video_path = "drone_video.mp4";
   
   if (argc > 1) {
     video_path = argv[1];

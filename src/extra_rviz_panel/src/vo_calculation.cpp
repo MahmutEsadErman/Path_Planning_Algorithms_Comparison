@@ -1,5 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/features2d.hpp>
+#include <opencv2/xfeatures2d.hpp> // For SURF
+#include <opencv2/objdetect.hpp>   // For HOG
 #include <opencv2/calib3d.hpp>
 #include <opencv2/highgui.hpp> // For cv::imshow
 
@@ -15,6 +17,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 class VisualOdometry
 {
@@ -24,32 +27,51 @@ private:
 
     cv::Ptr<cv::Feature2D> fe_method;
     cv::Ptr<cv::FlannBasedMatcher> flann_;
+    
+    // For HOG
+    cv::HOGDescriptor hog_;
+    std::string method_;
 
     cv::Mat visual_T;
     cv::Mat gt_T;
     cv::Mat img_matches;
     size_t match_size;
+    double ratio_test_k;
     
 public:
     bool K_received_;
 
-    VisualOdometry(double camera_pitch_angle = 60.0)
+    VisualOdometry(double camera_pitch_angle = 60.0, std::string feature_detector_name = "ORB", double ratio_test_k_ = 0.7)
     {
+        method_ = feature_detector_name;
         // Initialize feature detector and FLANN matcher
-        std::string feature_detector = "SIFT";  // Default feature detector
+
+        ratio_test_k = ratio_test_k_;
         
-        // Initialize the feature detector based on the string
-        if (feature_detector == "SIFT") {
-            fe_method = cv::SIFT::create();
-        } else if (feature_detector == "ORB") {
+        if (method_ == "ORB") {
             fe_method = cv::ORB::create();
+            // Use LSH Index for binary descriptors (ORB)
+            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2));
+        } else if (method_ == "SURF") {
+            int hessian_threshold = 400;
+            fe_method = cv::xfeatures2d::SURF::create(hessian_threshold);
+            // Use KD-Tree Index for floating point descriptors (SURF)
+            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::KDTreeIndexParams>(5));
+        } else if (method_ == "HOG") {
+            // HOG is not a Feature2D, so we don't init fe_method here in the same way, 
+            // or we use it just for interface if we wrapped it, but here we'll handle it separately.
+            // Initialize HOG descriptor
+            hog_ = cv::HOGDescriptor(); 
+            // Use KD-Tree Index for floating point descriptors (HOG)
+            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::KDTreeIndexParams>(5));
         } else {
-            fe_method = cv::SIFT::create();  // Fallback to SIFT
+            // Default to SIFT
+            method_ = "SIFT";
+            fe_method = cv::SIFT::create();
+            // Use KD-Tree Index for floating point descriptors (SIFT)
+            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::KDTreeIndexParams>(5));
         }
-        
-        // Initialize FLANN matcher
-        flann_ = cv::FlannBasedMatcher::create();
-              
+
         K_received_ = false;
         
         // Step 1: Define C_Cros_Ccv (OpenCV Cam to ROS-style Cam)
@@ -83,6 +105,11 @@ public:
     {
         if (K_received_)
         {   
+            if (match_size < 10)
+            {
+                std::cerr << "Warning: Not enough good matches: " << match_size << std::endl;
+                return;
+            }
             compare_transformations();
             cv::imshow("matches", img_matches);
             cv::waitKey(1);
@@ -131,8 +158,54 @@ public:
         // 1. Feature Detection and Description
         std::vector<cv::KeyPoint> kp1, kp2;
         cv::Mat des1, des2;
-        fe_method->detectAndCompute(frame1, cv::Mat(), kp1, des1);
-        fe_method->detectAndCompute(frame2, cv::Mat(), kp2, des2);
+
+        if (method_ == "HOG") {
+            // HOG doesn't have a detectAndCompute interface in the same way
+            // We use GFTT (Good Features To Track) for detection
+            int maxCorners = 1000;
+            double qualityLevel = 0.01;
+            double minDistance = 10;
+            std::vector<cv::Point2f> corners1, corners2;
+            
+            cv::goodFeaturesToTrack(frame1, corners1, maxCorners, qualityLevel, minDistance);
+            cv::goodFeaturesToTrack(frame2, corners2, maxCorners, qualityLevel, minDistance);
+
+            // Convert points to KeyPoints for HOG computation
+            for(auto& p : corners1) kp1.emplace_back(p, 10.0f); // Size 10 for HOG block?
+            for(auto& p : corners2) kp2.emplace_back(p, 10.0f);
+
+            // Compute HOG descriptors
+            // HOGDescriptor::compute returns vector<float>, we need to reshape to Mat
+            std::vector<float> descriptors1_vec, descriptors2_vec;
+            // Note: HOG compute usually takes image and locations. 
+            // However, standard HOG is for dense detection. 
+            // For sparse descriptors at keypoints, we can use compute with specific locations.
+            // But cv::HOGDescriptor::compute signature is: 
+            // compute(img, descriptors, winStride, padding, locations)
+            
+            std::vector<cv::Point> locs1, locs2;
+            for(auto& kp : kp1) locs1.push_back(kp.pt);
+            for(auto& kp : kp2) locs2.push_back(kp.pt);
+
+            if (!locs1.empty()) {
+                hog_.compute(frame1, descriptors1_vec, cv::Size(0,0), cv::Size(0,0), locs1);
+                // Reshape to (N, D)
+                if (!descriptors1_vec.empty()) {
+                    des1 = cv::Mat(descriptors1_vec).reshape(1, locs1.size());
+                }
+            }
+            if (!locs2.empty()) {
+                hog_.compute(frame2, descriptors2_vec, cv::Size(0,0), cv::Size(0,0), locs2);
+                 if (!descriptors2_vec.empty()) {
+                    des2 = cv::Mat(descriptors2_vec).reshape(1, locs2.size());
+                }
+            }
+
+        } else {
+            // SIFT, SURF, ORB
+            fe_method->detectAndCompute(frame1, cv::Mat(), kp1, des1);
+            fe_method->detectAndCompute(frame2, cv::Mat(), kp2, des2);
+        }
 
         if (des1.empty() || des2.empty())
         {
@@ -148,7 +221,7 @@ public:
         std::vector<cv::DMatch> good_matches;
         for (const auto& match_pair : matches)
         {
-            if (match_pair.size() == 2 && match_pair[0].distance < 0.8 * match_pair[1].distance)
+            if (match_pair.size() == 2 && match_pair[0].distance < ratio_test_k * match_pair[1].distance)
             {
                 good_matches.push_back(match_pair[0]);
             }
@@ -168,10 +241,14 @@ public:
             q2.push_back(kp2[m.trainIdx].pt);
         }
 
-        // 5. Estimate motion
-        cv::Mat E, R, t;
-        E = cv::findEssentialMat(q1, q2, K_, cv::RANSAC, 0.999, 1.0);
-        cv::recoverPose(E, q1, q2, K_, R, t);
+        // 5. Estimate motion   
+        cv::Mat E, R, t, mask;
+        
+        // Use USAC_MAGSAC (modern RANSAC) and stricter threshold (0.5 px)
+        E = cv::findEssentialMat(q1, q2, K_, cv::USAC_MAGSAC, 0.999, 0.2, mask);
+        
+        // Pass the mask to recoverPose so it uses only the good inliers
+        cv::recoverPose(E, q1, q2, K_, R, t, mask);
 
         // 6. Transform from OpenCV Camera Frame to Drone Body Frame
 

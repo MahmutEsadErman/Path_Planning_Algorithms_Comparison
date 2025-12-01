@@ -7,7 +7,7 @@
 int main(int argc, char* argv[])
 {
   // Video file path
-  std::string video_path = "output_video.mp4";
+  std::string video_path = "drone_video.mp4";
   
   if (argc > 1) {
     video_path = argv[1];
@@ -35,15 +35,6 @@ int main(int argc, char* argv[])
   // Create SURF detector
   int hessian_threshold = 400;
   cv::Ptr<cv::xfeatures2d::SURF> surf = cv::xfeatures2d::SURF::create(hessian_threshold);
-  
-  // Create video writer for output
-  int fourcc = cv::VideoWriter::fourcc('m', 'p', '4', 'v');
-  cv::VideoWriter output_video("output_surf_features.mp4", fourcc, fps, cv::Size(width, height));
-  
-  if (!output_video.isOpened()) {
-    std::cerr << "Error: Could not create output video writer" << std::endl;
-    return -1;
-  }
   
   cv::Mat frame, gray, frame_with_features;
   std::vector<cv::KeyPoint> keypoints;
@@ -80,9 +71,6 @@ int main(int argc, char* argv[])
     cv::putText(frame_with_features, frame_text, cv::Point(10, 70),
                 cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 255, 0), 2);
     
-    // Write frame to output video
-    output_video.write(frame_with_features);
-    
     // Display frame
     cv::imshow("SURF Features", frame_with_features);
     
@@ -102,11 +90,9 @@ int main(int argc, char* argv[])
   }
   
   std::cout << "\nProcessing complete!" << std::endl;
-  std::cout << "Output video saved as: output_surf_features.mp4" << std::endl;
   
   // Release resources
   video.release();
-  output_video.release();
   cv::destroyAllWindows();
   
   return 0;

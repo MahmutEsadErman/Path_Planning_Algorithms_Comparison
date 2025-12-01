@@ -1,42 +1,43 @@
-colcon build --packages-select my_package
+# GPS-Denied Navigation with Monocular Camera
 
-source install/local_setup.bash
+![Python](https://img.shields.io/badge/Python-3.x-blue.svg)
+![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-green.svg)
+![Status](https://img.shields.io/badge/Status-Active-success.svg)
 
-ros2 run my_package my_node
+## Overview
 
-ros2 pkg create --build-type ament_cmake --license Apache-2.0 --node-name my_node my_package
+In environments where GPS signals are jammed, unreliable, or unavailable (such as indoors, urban canyons, or forests), relying on satellite positioning is impossible. This system solves that problem by analyzing the motion of features between consecutive image frames to calculate the relative motion of the camera, enabling autonomous navigation without external signals.
 
-rosdep install --from-paths src -y --ignore-src
+## Key Features
 
-sim_vehicle.py -v copter --console --map -w
+* **Feature Detection & Tracking:** Utilizes robust algorithms (e.g., SIFT, SURF, or ORB) to identify landmarks in the environment.
+* **Real-time Trajectory Plotting:** Visualizes the estimated path of the vehicle in real-time.
+* **GPS-Denied Capability:** Functions entirely offline without need for GNSS/GPS connection.
+* **Lightweight:** Designed to run on embedded systems (potential for Raspberry Pi/Jetson deployment).
 
-STABILIZE> mode guided
-GUIDED> arm throttle
-GUIDED> takeoff 5
+## Prerequisites
 
-gz sim -v4 -r iris_runway.sdf
+To run this project, you can use docker.
 
-sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --map --console
+## Installation
 
-ros2 run ros_gz_bridge parameter_bridge /world/iris_runway/model/iris_with_gimbal/model/gimbal/link/pitch_link/sensor/camera/image@sensor_msgs/msg/Image@gz.msgs.Image
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/MahmutEsadErman/GPS-Denied-Navigation-with-Monocular-Camera.git](https://github.com/MahmutEsadErman/GPS-Denied-Navigation-with-Monocular-Camera.git)
+    cd GPS-Denied-Navigation-with-Monocular-Camera
+    ```
 
+3.  **Controls:**
+    * Press `q` or `ESC` to exit the visualization window.
+    * The system will display the current frame with tracked features and a separate window showing the 2D trajectory.
 
-ros2 launch mavros apm.launch fcu_url:=udp://:14550@
+## How It Works
 
-ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: true}"
+The system follows a standard Monocular Visual Odometry pipeline:
 
-ros2 launch uav_vslam uav_vslam.launch.py
-
-
-echo 'export GZ_SIM_SYSTEM_PLUGIN_PATH=$HOME/gz_ws/src/ardupilot_gazebo/build:${GZ_SIM_SYSTEM_PLUGIN_PATH}' >> ~/.bashrc
-echo 'export GZ_SIM_RESOURCE_PATH=/ros2_tutorials/new_models:${GZ_SIM_RESOURCE_PATH}' >> ~/.bashrc
-
-ros2 bag record -a -o simple_path2
-
-ros2 bag record -o simple_path /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
-
-
-sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --console --out=udp:127.0.0.1:14551
-
-ros2 run gps_denied_nav drone_control
-ros2 run gps_denied_nav main --ros2-args -p bag_file_path:=simple_path
+1.  **Image Capture:** Frames are grabbed from the camera stream.
+2.  **Feature Extraction:** The system detects keypoints in the current frame $I_k$ (e.g., corners, edges).
+3.  **Feature Tracking:** It matches these keypoints to the previous frame $I_{k-1}$ using Optical Flow (Lucas-Kanade) or Feature Matching.
+4.  **Pose Estimation:**
+    * The **Essential Matrix ($E$)** is computed from the matched point pairs.
+    * $E$ is decomposed into Rotation ($R$) and Translation ($t$) matrices using Singular Value Decomposition (SVD).

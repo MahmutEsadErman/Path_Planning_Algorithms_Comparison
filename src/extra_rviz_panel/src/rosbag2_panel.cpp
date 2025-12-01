@@ -101,6 +101,9 @@ void PlaybackPanel::onInitialize()
 template<typename MessageT>
 std::shared_ptr<MessageT> deserializeMessage(const rosbag2_storage::SerializedBagMessageSharedPtr& serialized_bag_msg)
 {
+  if (!serialized_bag_msg) {
+    return nullptr;
+  }
   auto msg = std::make_shared<MessageT>();
   rclcpp::Serialization<MessageT> serializer;
   rclcpp::SerializedMessage serialized_msg(*(serialized_bag_msg->serialized_data));

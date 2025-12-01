@@ -29,24 +29,24 @@ Panels:
     SyncMode: 0
     SyncSource: ""
   - Class: extra_rviz_panel::DronePanel
-    Kd_alt: 0.01
+    Kd_alt: 0.014
     Kd_pitch: 0
-    Kd_roll: 0.07
-    Kd_yaw: 0
-    Ki_alt: 0.15
+    Kd_roll: 0
+    Kd_yaw: 0.05
+    Ki_alt: 0.212
     Ki_pitch: 0
     Ki_roll: 0
-    Ki_yaw: 0
-    Kp_alt: 2.3
+    Ki_yaw: 0.5000000000000002
+    Kp_alt: 0.9
     Kp_pitch: 0
-    Kp_roll: 15.93
-    Kp_yaw: 0
+    Kp_roll: 0
+    Kp_yaw: 5.8
     Name: DronePanel
-    TuningMode: false
-    setpoint_alt: 35
-    setpoint_pitch: 0
-    setpoint_roll: 0.1
-    setpoint_yaw: 0.56
+    TuningMode: true
+    setpoint_alt: 45
+    setpoint_pitch: 50
+    setpoint_roll: 0
+    setpoint_yaw: 0.4800000000000001
 Visualization Manager:
   Class: ""
   Displays:
@@ -224,5 +224,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1037
-  X: 1973
+  X: 1920
   Y: 32

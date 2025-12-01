@@ -1,6 +1,7 @@
 #include "extra_rviz_panel/drone_panel.hpp"
 #include <rviz_common/display_context.hpp>
 #include <mavros_msgs/srv/command_bool.hpp>
+#include <mavros_msgs/srv/set_mode.hpp>
 #include <QFile>
 #include <QTextStream>
 #include <QDir>
@@ -40,6 +41,7 @@ void DronePanel::onInitialize()
 {
     node_ = getDisplayContext()->getRosNodeAbstraction().lock()->get_raw_node();
     param_client_ = std::make_shared<rclcpp::AsyncParametersClient>(node_, "/drone_controller_node");
+    mode_client_ = node_->create_client<mavros_msgs::srv::SetMode>("/mavros/set_mode");
     arming_client_ = node_->create_client<mavros_msgs::srv::CommandBool>("/mavros/cmd/arming");
     
     // Try to load saved values
@@ -103,9 +105,6 @@ void DronePanel::createPidGroup(const QString & title,
     ki = new QDoubleSpinBox; setSpinBoxStyle(ki);
     kd = new QDoubleSpinBox; setSpinBoxStyle(kd);
     setpoint = new QDoubleSpinBox; setSpinBoxStyle(setpoint);
-    
-    // Set ranges appropriate for PID and Setpoints
-    setpoint->setRange(-100.0, 100.0); 
 
     grid->addWidget(new QLabel("Kp:"), 0, 0); grid->addWidget(kp, 0, 1);
     grid->addWidget(new QLabel("Ki:"), 0, 2); grid->addWidget(ki, 0, 3);
@@ -124,9 +123,9 @@ void DronePanel::createPidGroup(const QString & title,
 
 void DronePanel::setSpinBoxStyle(QDoubleSpinBox * spin)
 {
-    spin->setDecimals(3);
+    spin->setDecimals(4);
     spin->setSingleStep(0.01);
-    spin->setRange(0.0, 100.0); // Default range, override for setpoint if needed
+    spin->setRange(-1000.0, 1000.0); // Default range, override for setpoint if needed
 }
 
 void DronePanel::onTuningModeChanged(int state)
@@ -151,15 +150,9 @@ void DronePanel::updateParameters()
     params.push_back(rclcpp::Parameter("setpoint_alt", setpoint_alt_spin_->value()));
 
     // Roll
-    params.push_back(rclcpp::Parameter("Kp_roll", kp_roll_spin_->value()));
-    params.push_back(rclcpp::Parameter("Ki_roll", ki_roll_spin_->value()));
-    params.push_back(rclcpp::Parameter("Kd_roll", kd_roll_spin_->value()));
     params.push_back(rclcpp::Parameter("setpoint_roll", setpoint_roll_spin_->value()));
 
     // Pitch
-    params.push_back(rclcpp::Parameter("Kp_pitch", kp_pitch_spin_->value()));
-    params.push_back(rclcpp::Parameter("Ki_pitch", ki_pitch_spin_->value()));
-    params.push_back(rclcpp::Parameter("Kd_pitch", kd_pitch_spin_->value()));
     params.push_back(rclcpp::Parameter("setpoint_pitch", setpoint_pitch_spin_->value()));
 
     // Yaw
@@ -238,7 +231,19 @@ void DronePanel::save(rviz_common::Config config) const
 }
 
 void DronePanel::onArmClicked()
-{
+{   
+    if (!mode_client_) return;
+
+    auto request = std::make_shared<mavros_msgs::srv::SetMode::Request>();
+    request->custom_mode = "ALT_HOLD";
+
+    if (!mode_client_->wait_for_service(std::chrono::seconds(1))) {
+        RCLCPP_ERROR(node_->get_logger(), "SetMode service not available");
+        return;
+    }
+
+    mode_client_->async_send_request(request);
+
     arm();
 }
 

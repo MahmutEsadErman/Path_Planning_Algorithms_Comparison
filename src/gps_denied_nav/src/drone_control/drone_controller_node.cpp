@@ -53,36 +53,24 @@ public:
             std::bind(&DroneControllerNode::imuCallback, this, std::placeholders::_1));
 
         err_alt_pub_ = create_publisher<std_msgs::msg::Float64>("/drone/err_alt", 10);
-        err_roll_pub_ = create_publisher<std_msgs::msg::Float64>("/drone/err_roll", 10);
-        err_pitch_pub_ = create_publisher<std_msgs::msg::Float64>("/drone/err_pitch", 10);
         err_yaw_pub_ = create_publisher<std_msgs::msg::Float64>("/drone/err_yaw", 10);
 
         // PID params
-        this->declare_parameter("Kp_alt", 3.0);
-        this->declare_parameter("Ki_alt", 0.22);
-        this->declare_parameter("Kd_alt", 0.1);
-        
-        // Roll PID
-        this->declare_parameter("Kp_roll", 0.135);
-        this->declare_parameter("Ki_roll", 0.135);
-        this->declare_parameter("Kd_roll", 0.0036);
-        
-        // Pitch PID
-        this->declare_parameter("Kp_pitch", 0.135);
-        this->declare_parameter("Ki_pitch", 0.135);
-        this->declare_parameter("Kd_pitch", 0.0036);
-        
+        this->declare_parameter("Kp_alt", 0.9);
+        this->declare_parameter("Ki_alt", 0.212);
+        this->declare_parameter("Kd_alt", 0.014);
+
         // Yaw PID
-        this->declare_parameter("Kp_yaw", 0.3);
-        this->declare_parameter("Ki_yaw", 0.05);
-        this->declare_parameter("Kd_yaw", 0.0);
+        this->declare_parameter("Kp_yaw", 5.8);
+        this->declare_parameter("Ki_yaw", 0.06);
+        this->declare_parameter("Kd_yaw", 0.05);
 
         // Tuning Mode Parameters
         this->declare_parameter("tuning_mode", false);
         this->declare_parameter("hover_throttle", 500.0);
         this->declare_parameter("setpoint_alt", 0.0);
-        this->declare_parameter("setpoint_roll", 0.0);
         this->declare_parameter("setpoint_pitch", 0.0);
+        this->declare_parameter("setpoint_roll", 0.0);
         this->declare_parameter("setpoint_yaw", 0.0);
 
         getParams();
@@ -130,14 +118,6 @@ private:
         Ki_alt_ = get_parameter("Ki_alt").as_double();
         Kd_alt_ = get_parameter("Kd_alt").as_double();
         
-        Kp_roll_ = get_parameter("Kp_roll").as_double();
-        Ki_roll_ = get_parameter("Ki_roll").as_double();
-        Kd_roll_ = get_parameter("Kd_roll").as_double();
-        
-        Kp_pitch_ = get_parameter("Kp_pitch").as_double();
-        Ki_pitch_ = get_parameter("Ki_pitch").as_double();
-        Kd_pitch_ = get_parameter("Kd_pitch").as_double();
-        
         Kp_yaw_ = get_parameter("Kp_yaw").as_double();
         Ki_yaw_ = get_parameter("Ki_yaw").as_double();
         Kd_yaw_ = get_parameter("Kd_yaw").as_double();
@@ -145,8 +125,8 @@ private:
         tuning_mode_ = get_parameter("tuning_mode").as_bool();
         hover_throttle_ = get_parameter("hover_throttle").as_double();
         setpoint_alt_ = get_parameter("setpoint_alt").as_double();
-        setpoint_roll_ = get_parameter("setpoint_roll").as_double();
         setpoint_pitch_ = get_parameter("setpoint_pitch").as_double();
+        setpoint_roll_ = get_parameter("setpoint_roll").as_double();
         setpoint_yaw_ = get_parameter("setpoint_yaw").as_double();
     }
 
@@ -163,20 +143,14 @@ private:
             if (param.get_name() == "Kp_alt") Kp_alt_ = param.as_double();
             else if (param.get_name() == "Ki_alt") Ki_alt_ = param.as_double();
             else if (param.get_name() == "Kd_alt") Kd_alt_ = param.as_double();
-            else if (param.get_name() == "Kp_roll") Kp_roll_ = param.as_double();
-            else if (param.get_name() == "Ki_roll") Ki_roll_ = param.as_double();
-            else if (param.get_name() == "Kd_roll") Kd_roll_ = param.as_double();
-            else if (param.get_name() == "Kp_pitch") Kp_pitch_ = param.as_double();
-            else if (param.get_name() == "Ki_pitch") Ki_pitch_ = param.as_double();
-            else if (param.get_name() == "Kd_pitch") Kd_pitch_ = param.as_double();
             else if (param.get_name() == "Kp_yaw") Kp_yaw_ = param.as_double();
             else if (param.get_name() == "Ki_yaw") Ki_yaw_ = param.as_double();
             else if (param.get_name() == "Kd_yaw") Kd_yaw_ = param.as_double();
             else if (param.get_name() == "tuning_mode") tuning_mode_ = param.as_bool();
             else if (param.get_name() == "hover_throttle") hover_throttle_ = param.as_double();
             else if (param.get_name() == "setpoint_alt") setpoint_alt_ = param.as_double();
-            else if (param.get_name() == "setpoint_roll") setpoint_roll_ = param.as_double();
             else if (param.get_name() == "setpoint_pitch") setpoint_pitch_ = param.as_double();
+            else if (param.get_name() == "setpoint_roll") setpoint_roll_ = param.as_double();
             else if (param.get_name() == "setpoint_yaw") setpoint_yaw_ = param.as_double();
         }
 
@@ -231,68 +205,51 @@ private:
         // Tuning Mode Logic
         if (tuning_mode_) {
             target_altitude_ = setpoint_alt_;
-            target_roll_ = setpoint_roll_;
             target_pitch_ = setpoint_pitch_;
             target_yaw_ = setpoint_yaw_;
+            target_roll_ = setpoint_roll_;
         }
 
         // Altitude PID
         double err_alt = target_altitude_ - current_altitude_;
         integral_alt_ += err_alt * dt;
         // anti wind-up
-        integral_alt_ = clamp(integral_alt_, -10.0, 10.0);
+        integral_alt_ = clamp(integral_alt_, -5.0, 5.0);
         
-        double deriv_alt = 0.7 * deriv_alt_prev + 0.3 * ((err_alt - prev_err_alt_) / dt);
-        deriv_alt_prev = deriv_alt;
+        double deriv_alt = (err_alt - prev_err_alt_) / dt;
         prev_err_alt_ = err_alt;
         
         double throttle = Kp_alt_ * err_alt + Ki_alt_ * integral_alt_ + Kd_alt_ * deriv_alt;
-
-        // Roll PID
-        double err_roll = target_roll_ - current_roll_;
-        integral_roll_ += err_roll * dt;
-        integral_roll_ = clamp(integral_roll_, -5.0, 5.0); // Anti-windup
-        
-        // Derivative on Measurement: -Kd * gyro_rate
-        // Note: gyro x is roll rate in body frame (approximate for small angles)
-        double roll_out = Kp_roll_ * err_roll + Ki_roll_ * integral_roll_ - Kd_roll_ * current_ang_vel_x_;
-
-        // Pitch PID
-        double err_pitch = target_pitch_ - current_pitch_;
-        integral_pitch_ += err_pitch * dt;
-        integral_pitch_ = clamp(integral_pitch_, -5.0, 5.0); // Anti-windup
-        
-        // Derivative on Measurement
-        double pitch_out = Kp_pitch_ * err_pitch + Ki_pitch_ * integral_pitch_ - Kd_pitch_ * current_ang_vel_y_;
 
         // Yaw PID
         double err_yaw = atan2(sin(target_yaw_ - current_yaw_),
                        cos(target_yaw_ - current_yaw_));
         integral_yaw_ += err_yaw * dt;
-        integral_yaw_ = clamp(integral_yaw_, -5.0, 5.0); // Anti-windup
+        integral_yaw_ = clamp(integral_yaw_, -4.5, 4.5); // Anti-windup
         
         // Derivative on Measurement
         double yaw_out = Kp_yaw_ * err_yaw + Ki_yaw_ * integral_yaw_ - Kd_yaw_ * current_ang_vel_z_;
 
+        // For pitch and roll we use manuel control inputs
+        float x = target_pitch_;   // pitch
+        float y = target_roll_;    // roll
+
         // Normalize outputs to [-900,900]
-        auto clamp_val = [](double v, double min, double max) { return std::max(min, std::min(max, v)); };
-        float x = clamp_val(pitch_out * 500, -900.0f, 900.0f);   // pitch
-        float y = clamp_val(roll_out * 500, -900.0f, 900.0f);    // roll
         // Add feed-forward gravity compensation (approx 500)
-        float z = clamp_val(throttle * 100 + hover_throttle_, 0.0f, 900.0f); // throttle
+        float z = clamp(throttle * 100 + hover_throttle_, 0.0f, 1000.0f); // throttle
         // Invert Yaw for MAVLink (CW positive) vs ROS (CCW positive)
-        float r = clamp_val(-yaw_out * 200, -900.0f, 900.0f);    // yaw
+        float r = clamp(-yaw_out * 200, -900.0f, 900.0f);    // yaw
 
         sendManualControl(x, y, z, r);
         
         if (tuning_mode_) {
-            plotErrors(err_alt, err_roll, err_pitch, err_yaw);
+            plotErrors(err_alt, err_yaw);
         }
         
         RCLCPP_INFO(get_logger(),
-                    "Alt %.2f/%.2f | RPY [%.2f %.2f %.2f] | Thr %.1f | Mode: %s",
+                    "Alt %.2f/%.2f | RPY [%.2f %.2f %.2f/%.2f] | Thr %.1f | Mode: %s",
                     current_altitude_, target_altitude_,
-                    current_roll_, current_pitch_, current_yaw_, z,
+                    current_roll_, current_pitch_, current_yaw_, target_yaw_, z,
                     tuning_mode_ ? "TUNING" : "MANUAL");
     }
 
@@ -300,17 +257,11 @@ private:
         return std::max(min, std::min(max, v));
     }
     
-    void plotErrors(double err_alt, double err_roll, double err_pitch, double err_yaw) {
+    void plotErrors(double err_alt, double err_yaw) {
         std_msgs::msg::Float64 msg;
         
         msg.data = err_alt;
         err_alt_pub_->publish(msg);
-        
-        msg.data = err_roll;
-        err_roll_pub_->publish(msg);
-        
-        msg.data = err_pitch;
-        err_pitch_pub_->publish(msg);
         
         msg.data = err_yaw;
         err_yaw_pub_->publish(msg);
@@ -321,8 +272,6 @@ private:
     rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_sub_;
     rclcpp::Subscription<mavros_msgs::msg::ManualControl>::SharedPtr cmd_move_sub_;
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr err_alt_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr err_roll_pub_;
-    rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr err_pitch_pub_;
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr err_yaw_pub_;
     rclcpp::TimerBase::SharedPtr control_timer_;
     OnSetParametersCallbackHandle::SharedPtr params_callback_handle_;
