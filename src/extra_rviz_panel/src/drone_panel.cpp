@@ -2,6 +2,7 @@
 #include <rviz_common/display_context.hpp>
 #include <mavros_msgs/srv/command_bool.hpp>
 #include <mavros_msgs/srv/set_mode.hpp>
+#include <mavros_msgs/srv/command_tol.hpp>
 #include <QFile>
 #include <QTextStream>
 #include <QDir>
@@ -43,6 +44,7 @@ void DronePanel::onInitialize()
     param_client_ = std::make_shared<rclcpp::AsyncParametersClient>(node_, "/drone_controller_node");
     mode_client_ = node_->create_client<mavros_msgs::srv::SetMode>("/mavros/set_mode");
     arming_client_ = node_->create_client<mavros_msgs::srv::CommandBool>("/mavros/cmd/arming");
+    takeoff_client_ = node_->create_client<mavros_msgs::srv::CommandTOL>("/mavros/cmd/takeoff");
     
     // Try to load saved values
     loadPidValues();
@@ -235,7 +237,7 @@ void DronePanel::onArmClicked()
     if (!mode_client_) return;
 
     auto request = std::make_shared<mavros_msgs::srv::SetMode::Request>();
-    request->custom_mode = "ALT_HOLD";
+    request->custom_mode = "GUIDED";
 
     if (!mode_client_->wait_for_service(std::chrono::seconds(1))) {
         RCLCPP_ERROR(node_->get_logger(), "SetMode service not available");
@@ -245,6 +247,29 @@ void DronePanel::onArmClicked()
     mode_client_->async_send_request(request);
 
     arm();
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    takeoff();
+}
+
+void DronePanel::takeoff()
+{
+    if (!takeoff_client_) return;
+    
+    auto request = std::make_shared<mavros_msgs::srv::CommandTOL::Request>();
+    request->altitude = 50;
+    request->latitude = 0;
+    request->longitude = 0;
+    request->min_pitch = 0;
+    request->yaw = 0;
+    
+    if (!takeoff_client_->wait_for_service(std::chrono::seconds(1))) {
+        RCLCPP_ERROR(node_->get_logger(), "Takeoff service not available");
+        return;
+    }
+
+    takeoff_client_->async_send_request(request);
 }
 
 void DronePanel::arm()

@@ -11,6 +11,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QLabel>
+#include <QComboBox>
 
 #include "rclcpp/generic_publisher.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -46,6 +47,7 @@ protected Q_SLOTS:
   void onTimerCallback(); // This will be our main playback loop
   void onTimerIntervalChanged(int value);
   void onChooseMomentClicked();
+  void onMethodChanged(int index);
 
 private:
   void openBag(const std::string& bag_filename);
@@ -59,6 +61,8 @@ private:
   QPushButton* choose_moment_button_;
   QSpinBox* timer_interval_spinbox_;
   QLabel* timer_interval_label_;
+  QComboBox* method_selector_;
+  QLabel* method_label_;
 
   // --- ROS & Bag Elements ---
   // We use a QTimer for GUI-safe ticking

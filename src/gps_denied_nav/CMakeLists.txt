@@ -8,6 +8,10 @@ endif()
 
 set(OpenCV_DIR "/home/ubuntu/opencv/build")
 
+# Set RPATH so OpenCV libraries are found at runtime
+set(CMAKE_INSTALL_RPATH "/home/ubuntu/opencv/build/lib")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)

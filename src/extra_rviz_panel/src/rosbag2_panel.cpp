@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QSpinBox>
 #include <QLabel>
+#include <QComboBox>
 
 #include "pluginlib/class_list_macros.hpp"
 #include "rclcpp/serialization.hpp"
@@ -65,6 +66,21 @@ PlaybackPanel::PlaybackPanel(QWidget* parent)
   timer_layout->addStretch(); // Add stretch to push widgets to the left
   main_layout->addLayout(timer_layout);
 
+  // Method selection layout
+  QHBoxLayout* method_layout = new QHBoxLayout();
+  method_label_ = new QLabel("Feature Detection Method:");
+  method_selector_ = new QComboBox();
+  method_selector_->addItem("SIFT");
+  method_selector_->addItem("SURF");
+  method_selector_->addItem("ORB");
+  method_selector_->addItem("HOG");
+  method_selector_->setCurrentIndex(1); // Default to SURF
+  method_selector_->setToolTip("Select the feature detection method for visual odometry");
+  method_layout->addWidget(method_label_);
+  method_layout->addWidget(method_selector_);
+  method_layout->addStretch();
+  main_layout->addLayout(method_layout);
+
   // Set the main layout for the panel
   setLayout(main_layout);
 
@@ -80,6 +96,8 @@ PlaybackPanel::PlaybackPanel(QWidget* parent)
   connect(playback_timer_, &QTimer::timeout, this, &PlaybackPanel::onTimerCallback);
   connect(timer_interval_spinbox_, QOverload<int>::of(&QSpinBox::valueChanged), 
           this, &PlaybackPanel::onTimerIntervalChanged);
+  connect(method_selector_, QOverload<int>::of(&QComboBox::currentIndexChanged),
+          this, &PlaybackPanel::onMethodChanged);
 
 }
 
@@ -111,11 +129,18 @@ std::shared_ptr<MessageT> deserializeMessage(const rosbag2_storage::SerializedBa
   return msg;
 }
 
+// Helper function to get the shared vo_calculator instance
+static VisualOdometry& get_vo_calculator() {
+  static VisualOdometry vo_calculator;
+  return vo_calculator;
+}
+
 void PlaybackPanel::onChooseMomentClicked()
-{ 
+{
   static int8_t counter = 0;
   static std::map<std::string, rosbag2_storage::SerializedBagMessageSharedPtr> prev_msg;
-  static VisualOdometry vo_calculator;
+  
+  auto& vo_calculator = get_vo_calculator();
 
   if (counter > 0) {
     for (const auto& [topic_name, data] : publishers_) {
@@ -319,6 +344,20 @@ void PlaybackPanel::onTimerIntervalChanged(int value)
   }
 }
 
+void PlaybackPanel::onMethodChanged(int index)
+{
+  // Get the selected method name
+  QString method_name = method_selector_->itemText(index);
+  std::string method_str = method_name.toStdString();
+  
+  auto& vo_calculator = get_vo_calculator();
+  vo_calculator.change_method(method_str);
+  
+  if (rviz_node_) {
+    RCLCPP_INFO(rviz_node_->get_logger(), "Feature detection method changed to: %s", method_str.c_str());
+  }
+}
+
 
 // Load and save panel configuration (e.g., the last used bag file)
 void PlaybackPanel::load(const rviz_common::Config& config)
@@ -332,6 +371,10 @@ void PlaybackPanel::load(const rviz_common::Config& config)
   if (config.mapGetInt("timer_interval", &timer_interval)) {
     timer_interval_spinbox_->setValue(timer_interval);
   }
+  int method_index;
+  if (config.mapGetInt("method_index", &method_index)) {
+    method_selector_->setCurrentIndex(method_index);
+  }
 }
 
 void PlaybackPanel::save(rviz_common::Config config) const
@@ -339,6 +382,7 @@ void PlaybackPanel::save(rviz_common::Config config) const
   rviz_common::Panel::save(config);
   config.mapSetValue("bag_filename", file_path_editor_->text());
   config.mapSetValue("timer_interval", timer_interval_spinbox_->value());
+  config.mapSetValue("method_index", method_selector_->currentIndex());
 }
 
 } // namespace rviz_playback_panel

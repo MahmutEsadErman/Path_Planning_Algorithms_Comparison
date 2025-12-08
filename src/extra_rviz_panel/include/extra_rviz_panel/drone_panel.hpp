@@ -5,6 +5,7 @@
 #include <rviz_common/panel.hpp>
 #include <mavros_msgs/srv/command_bool.hpp>
 #include <mavros_msgs/srv/set_mode.hpp>
+#include <mavros_msgs/srv/command_tol.hpp>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -28,6 +29,7 @@ public:
     void load(const rviz_common::Config & config) override;
     void save(rviz_common::Config config) const override;
     void arm();
+    void takeoff();
 
 protected Q_SLOTS:
     void updateParameters();
@@ -69,6 +71,7 @@ protected:
     rclcpp::AsyncParametersClient::SharedPtr param_client_;
     rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr arming_client_;
     rclcpp::Client<mavros_msgs::srv::SetMode>::SharedPtr mode_client_;
+    rclcpp::Client<mavros_msgs::srv::CommandTOL>::SharedPtr takeoff_client_;
 
     void createPidGroup(const QString & title, 
                        QDoubleSpinBox*& kp, QDoubleSpinBox*& ki, QDoubleSpinBox*& kd, QDoubleSpinBox*& setpoint,

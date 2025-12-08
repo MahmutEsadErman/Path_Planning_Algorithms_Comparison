@@ -36,17 +36,17 @@ Panels:
     Ki_alt: 0.212
     Ki_pitch: 0
     Ki_roll: 0
-    Ki_yaw: 0.5000000000000002
+    Ki_yaw: 0.5
     Kp_alt: 0.9
     Kp_pitch: 0
     Kp_roll: 0
     Kp_yaw: 5.8
     Name: DronePanel
-    TuningMode: true
+    TuningMode: false
     setpoint_alt: 45
     setpoint_pitch: 50
     setpoint_roll: 0
-    setpoint_yaw: 0.4800000000000001
+    setpoint_yaw: 0.48
 Visualization Manager:
   Class: ""
   Displays:
@@ -97,7 +97,7 @@ Visualization Manager:
         X: -198
         Y: -48
         Z: 22
-      Pose Color: 255; 85; 255
+      Pose Color: 85; 0; 0
       Pose Style: None
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612

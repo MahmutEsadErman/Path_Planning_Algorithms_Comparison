@@ -39,4 +39,8 @@ ros2 bag record -o simple_path /camera/image /camera/camera_info /simulation_pos
 sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --console --out=udp:127.0.0.1:14551
 
 ros2 run gps_denied_nav drone_control
-ros2 run gps_denied_nav main --ros2-args -p bag_file_path:=simple_path
+ros2 run gps_denied_nav main --ros-args -p similarity_threshold:=0.2 -p yaw_kp:=0.0
+
+ros2 run gps_denied_nav main --ros-args -p yaw_kp:=0.0
+
+

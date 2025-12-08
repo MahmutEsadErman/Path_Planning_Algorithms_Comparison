@@ -19,6 +19,7 @@ find_package(rosbag2_transport REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
@@ -66,6 +67,17 @@ install(DIRECTORY include/
 )
 install(FILES rviz_common_plugins.xml
         DESTINATION share/${PROJECT_NAME}
+)
+
+# Path Visualizer Node
+add_executable(path_visualizer src/path_visualizer.cpp)
+ament_target_dependencies(path_visualizer
+  rclcpp
+  geometry_msgs
+  nav_msgs
+)
+install(TARGETS path_visualizer
+        DESTINATION lib/${PROJECT_NAME}
 )
 
 ament_export_include_directories(include)

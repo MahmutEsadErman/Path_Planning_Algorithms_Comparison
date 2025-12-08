@@ -102,10 +102,23 @@ def generate_launch_description():
         ]
     )
 
-    # RViz node
+    # Rviz Visualizer node
+    rviz_visualizer = Node(
+        package='extra_rviz_panel',
+        executable='path_visualizer',
+    )
+
+    # Drone control node
     drone_control = Node(
         package='gps_denied_nav',
         executable='drone_control',
+        parameters=[{
+            'path_file': 'simple_path.yaml',
+            'camera_pitch_angle': 60.0,
+            'similarity_threshold': 0.6,
+            'yaw_kp': 0.1,
+            'pitch_kp': 0.1,
+        }]
     )
 
     # Set Gimbal to 60 degrees down
@@ -119,6 +132,8 @@ def generate_launch_description():
         ],
         output='screen'
     )
+
+
     
     return LaunchDescription([
         pkg_name_arg,
@@ -127,5 +142,7 @@ def generate_launch_description():
         mavros,
         ros_gz_bridge,
         rviz,
+        rviz_visualizer,
+        # drone_control,
         set_gimbal_pitch
     ])

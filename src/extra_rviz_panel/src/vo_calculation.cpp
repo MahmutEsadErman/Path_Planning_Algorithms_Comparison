@@ -41,36 +41,14 @@ private:
 public:
     bool K_received_;
 
-    VisualOdometry(double camera_pitch_angle = 60.0, std::string feature_detector_name = "ORB", double ratio_test_k_ = 0.7)
+    VisualOdometry(double camera_pitch_angle = 60.0, std::string feature_detector_name = "SURF", double ratio_test_k_ = 0.7)
     {
         method_ = feature_detector_name;
         // Initialize feature detector and FLANN matcher
 
         ratio_test_k = ratio_test_k_;
         
-        if (method_ == "ORB") {
-            fe_method = cv::ORB::create();
-            // Use LSH Index for binary descriptors (ORB)
-            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2));
-        } else if (method_ == "SURF") {
-            int hessian_threshold = 400;
-            fe_method = cv::xfeatures2d::SURF::create(hessian_threshold);
-            // Use KD-Tree Index for floating point descriptors (SURF)
-            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::KDTreeIndexParams>(5));
-        } else if (method_ == "HOG") {
-            // HOG is not a Feature2D, so we don't init fe_method here in the same way, 
-            // or we use it just for interface if we wrapped it, but here we'll handle it separately.
-            // Initialize HOG descriptor
-            hog_ = cv::HOGDescriptor(); 
-            // Use KD-Tree Index for floating point descriptors (HOG)
-            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::KDTreeIndexParams>(5));
-        } else {
-            // Default to SIFT
-            method_ = "SIFT";
-            fe_method = cv::SIFT::create();
-            // Use KD-Tree Index for floating point descriptors (SIFT)
-            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::KDTreeIndexParams>(5));
-        }
+        change_method(feature_detector_name);
 
         K_received_ = false;
         
@@ -100,6 +78,34 @@ public:
         // Clean up OpenCV windows
         cv::destroyAllWindows();
     }
+
+    void change_method(std::string method_)
+    {
+        if (method_ == "ORB") {
+            fe_method = cv::ORB::create();
+            // Use LSH Index for binary descriptors (ORB)
+            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2));
+        } else if (method_ == "SURF") {
+            int hessian_threshold = 400;
+            fe_method = cv::xfeatures2d::SURF::create(hessian_threshold);
+            // Use KD-Tree Index for floating point descriptors (SURF)
+            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::KDTreeIndexParams>(5));
+        } else if (method_ == "HOG") {
+            // HOG is not a Feature2D, so we don't init fe_method here in the same way, 
+            // or we use it just for interface if we wrapped it, but here we'll handle it separately.
+            // Initialize HOG descriptor
+            hog_ = cv::HOGDescriptor(); 
+            // Use KD-Tree Index for floating point descriptors (HOG)
+            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::KDTreeIndexParams>(5));
+        } else {
+            // Default to SIFT
+            method_ = "SIFT";
+            fe_method = cv::SIFT::create();
+            // Use KD-Tree Index for floating point descriptors (SIFT)
+            flann_ = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::KDTreeIndexParams>(5));
+        }
+    }
+    
 
     void visualize_matches()
     {

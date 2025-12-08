@@ -43,6 +43,8 @@ public:
     std::vector<FrameData> path_data_;
     std::shared_ptr<rosbag2_cpp::Reader> reader_;
     bool timer_started_;
+    bool K_received_;
+    cv::Mat K_;
 
     // comparing image similarity
     cv::Ptr<cv::Feature2D> fe_method;
@@ -57,14 +59,17 @@ public:
     static constexpr int MIN_GOOD_MATCHES = 10;
 
     CreatePathNode() : Node("create_path_node"), timer_started_(false)
-    {
+    {   
+        this->declare_parameter<std::string>("feature_detector", "SURF");
         this->declare_parameter<std::string>("bag_file_path", "simple_path");
-        this->declare_parameter<std::string>("output_file", "simple_path");
+        this->declare_parameter<std::string>("output_file", "simple_path.yaml");
         this->declare_parameter<double>("similarity_threshold", 0.5);
         similarity_threshold = this->get_parameter("similarity_threshold").as_double();
 
+        K_received_ = false;
+
         // Initialize feature detector and FLANN matcher
-        std::string feature_detector = "SURF";
+        std::string feature_detector = this->get_parameter("feature_detector").as_string();
 
         if (feature_detector == "ORB") {
             fe_method = cv::ORB::create();
@@ -96,6 +101,7 @@ public:
 
         save_path(this->get_parameter("output_file").as_string());
 
+        exit(0);
     }
 
     void save_path(const std::string& filename)
@@ -105,6 +111,10 @@ public:
             RCLCPP_ERROR(this->get_logger(), "Failed to open file for writing: %s", filename.c_str());
             return;
         }
+
+        fs << "K" << K_;
+
+        fs << "feature_detector" << this->get_parameter("feature_detector").as_string();
 
         fs << "frames" << "[";
         for (const auto& frame : path_data_) {
@@ -216,7 +226,14 @@ public:
                 cv::Mat des;
                 fe_method->detectAndCompute(current_mat, cv::Mat(), kp, des);
 
+                if (kp.size() < MIN_GOOD_MATCHES) {
+                    continue;
+                }
+
                 if (path_data_.empty() || compare_features(des, path_data_.back().features.descriptors) < similarity_threshold) {
+                    if (last_valid_altitude < 10) {
+                        continue;
+                    }
                     frame.features = Features();
                     frame.features.keypoints = kp;
                     frame.features.descriptors = des;
@@ -241,10 +258,6 @@ public:
                         frame.imu = last_valid_imu;
                     }
 
-                    // Assign averaged Altitude
-                    if (alt_count > 0) {
-                        last_valid_altitude = alt_sum / alt_count;
-                    }
                     frame.altitude.data = last_valid_altitude;
 
                     if (last_pose_msg) {
@@ -258,12 +271,10 @@ public:
                     // Reset accumulators
                     acc_x_sum = 0; acc_y_sum = 0; acc_z_sum = 0;
                     gyro_x_sum = 0; gyro_y_sum = 0; gyro_z_sum = 0;
-                    alt_sum = 0;
                     imu_count = 0;
-                    alt_count = 0;
 
-                    cv::imshow("Image", current_mat);
-                    cv::waitKey(1);
+                    // cv::imshow("Image", current_mat);
+                    // cv::waitKey(1);
                 }
             }
             else if (msg->topic_name == "/mavros/imu/data") {
@@ -282,19 +293,18 @@ public:
             }
             else if (msg->topic_name == "/mavros/global_position/rel_alt") {
                 auto alt_msg = deserializeMessage<std_msgs::msg::Float64>(msg);
-                alt_sum += alt_msg->data;
-                alt_count++;
+                last_valid_altitude = alt_msg->data;
             }
             else if (msg->topic_name == "/simulation_pose_info") {
                 last_pose_msg = msg;
             }
-            if (topic_name == "/camera/camera_info") {
-                if (vo_calculator.K_received_) {
+            if (msg->topic_name == "/camera/camera_info") {
+                if (K_received_) {
                 continue; // Already received K, skip
                 }
                 // Deserialize the last message into a CameraInfo message
-                auto camera_info_msg = deserializeMessage<sensor_msgs::msg::CameraInfo>(data.last_message);
-                vo_calculator.set_K_from_CameraInfo(camera_info_msg);
+                auto camera_info_msg = deserializeMessage<sensor_msgs::msg::CameraInfo>(msg);
+                set_K_from_CameraInfo(camera_info_msg);
             }
         }
 
@@ -303,7 +313,7 @@ public:
 
     double compare_features(const cv::Mat& des1 , const cv::Mat& des2)
     {
-        if (des1.rows < MIN_DESCRIPTORS_FOR_MATCHING || des2.rows < MIN_DESCRIPTORS_FOR_MATCHING)
+        if (des1.rows < MIN_GOOD_MATCHES || des2.rows < MIN_GOOD_MATCHES)
         {
             // std::cerr << "Warning: No descriptors found or not enough for knnMatch." << std::endl;
             return 0.0;
@@ -311,14 +321,13 @@ public:
         
         // 2. Feature Matching (FLANN)
         std::vector<std::vector<cv::DMatch>> matches;
-        matcher->knnMatch(des1, des2, matches, MIN_DESCRIPTORS_FOR_MATCHING); // k=2 for ratio test
+        matcher->knnMatch(des1, des2, matches, 2); // k=2 for ratio test
 
         // 3. Ratio Test (Lowe's ratio test)
         std::vector<cv::DMatch> good_matches;
         for (const auto& match_pair : matches)
         {
-            if (match_pair.size() == MIN_DESCRIPTORS_FOR_MATCHING && 
-                match_pair[0].distance < RATIO_TEST_THRESHOLD * match_pair[1].distance)
+            if (match_pair[0].distance < RATIO_TEST_THRESHOLD * match_pair[1].distance)
             {
                 good_matches.push_back(match_pair[0]);
             }
