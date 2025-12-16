@@ -1,4 +1,4 @@
-/**
+/*
  * ROS2 Node for controlling drone using MAVLink
  * 
  * Compile with:
@@ -57,7 +57,9 @@ public:
     cv::Mat K_;
     std::string feature_detector;
     cv::Mat cam_tf;
-    double drone_yaw;
+    double drone_yaw = 0.0;
+    double filtered_yaw_ = 0.0;
+    bool filter_initialized_ = false;
 
 
     FollowPathNode() : Node("follow_path_node"), timer_started_(false)
@@ -65,10 +67,10 @@ public:
         // Initialize path index
         path_index_ = 0;
 
-        this->declare_parameter<std::string>("path_file", "simple_path.yaml");
-        this->declare_parameter<double>("camera_pitch_angle", 60.0);
-        this->declare_parameter<int>("similarity_threshold", 50);
-        this->declare_parameter<double>("yaw_kp", 0.01);
+        this->declare_parameter<std::string>("path_file", "path_90degree_surf.yaml");
+        this->declare_parameter<double>("camera_pitch_angle", 90.0);
+        this->declare_parameter<int>("similarity_threshold", 63);
+        this->declare_parameter<double>("yaw_kp", 0.1);
         this->declare_parameter<double>("pitch_kp", 1);
         
         similarity_threshold = this->get_parameter("similarity_threshold").as_int();
@@ -134,7 +136,6 @@ public:
         // Step 3: Combine them to get C_B_Ccv (OpenCV Cam to Drone Body)
         cam_tf = C_B_Cros * C_Cros_Ccv;
         
-        follow_path(0, 0);
     }
 
     void vel_publisher(geometry_msgs::msg::Twist vel, double yaw_rate)
@@ -170,11 +171,33 @@ public:
         drone_yaw = std::atan2(siny_cosp, cosy_cosp);
     }
 
+    double filter_yaw(double new_yaw) {
+        if (!filter_initialized_) {
+            filtered_yaw_ = new_yaw;
+            filter_initialized_ = true;
+            return filtered_yaw_;
+        }
+
+        // 1. Outlier Rejection (Gating)
+        // If value jumps more than 0.8 rad (~45 deg) from last valid value, ignore it.
+        if (std::abs(new_yaw - filtered_yaw_) > 0.8) {
+            return filtered_yaw_;
+        }
+
+        // 2. Exponential Moving Average (Low Pass Filter)
+        // alpha = 0.3 means 30% new value, 70% history. 
+        // Higher alpha = faster response, Lower alpha = smoother.
+        double alpha = 0.3;
+        filtered_yaw_ = alpha * new_yaw + (1.0 - alpha) * filtered_yaw_;
+        
+        return filtered_yaw_;
+    }
+
     void image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
     {   
         double target_yaw = 0;
         static auto start = std::chrono::high_resolution_clock::now();
-        std::cout << "Feature comparison time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " ms" << std::endl;
+        std::cout << "Outside of Image callback time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " ms" << std::endl;
 
         cv::Mat image = cv_bridge::toCvShare(msg, "bgr8")->image;
         cv::Mat gray_image;
@@ -182,30 +205,36 @@ public:
         std::vector<cv::KeyPoint> kp;
         cv::Mat des;
         std::vector<cv::DMatch> good_matches;
-         
+        
+        // Calculate how much time image processing takes
+        start = std::chrono::high_resolution_clock::now();
+
         fe_method->detectAndCompute(gray_image, cv::noArray(), kp, des);
         int matches = compare_features(path_data_[path_index_].features.descriptors, des, good_matches);
         
         // Only calculate translation if we have enough good matches
-        if (good_matches.size() >= 10) {
-            start = std::chrono::high_resolution_clock::now();
-            target_yaw = calculate_t_with_features(kp, path_data_[path_index_].features.keypoints, good_matches);
-            std::cout << "Translation calculation time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " ms" << std::endl;
+        if (good_matches.size() >= 20) {            
+            target_yaw = calculate_t_with_features(path_data_[path_index_].features.keypoints, kp, good_matches);
+            // target_yaw = filter_yaw(target_yaw);
         } else {
             RCLCPP_WARN(this->get_logger(), "Not enough matches (%zu) for pose estimation", good_matches.size());
         }
 
         RCLCPP_INFO(this->get_logger(), "path_index_: %d, Matches: %d Target Yaw: %f Drone Yaw: %f", (int)path_index_, matches, target_yaw, drone_yaw);
         if (matches > similarity_threshold) {
-            // Increment path index
-            path_index_ += 1;
-            pose_publisher_->publish(path_data_[path_index_].target_pose);
             if (path_index_ >= path_data_.size()) {
                 RCLCPP_INFO(this->get_logger(), "Path following completed");
                 return;
             }
+            // Increment path index
+            path_index_ += 1;
+            pose_publisher_->publish(path_data_[path_index_].target_pose);
         }
-        follow_path(matches, target_yaw);
+        if (path_index_ > 0) {
+            follow_path(matches, target_yaw);
+        }
+
+        std::cout << "image callback time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " ms" << std::endl;
         start = std::chrono::high_resolution_clock::now();
     }
 
@@ -215,7 +244,7 @@ public:
         static double yaw_kp = this->get_parameter("yaw_kp").as_double();
         static double vel = this->get_parameter("pitch_kp").as_double();
         static double prev_similarity = 0;
-        static double vel_x = 0;
+        static double vel_x = vel;
         static double vel_y = 0;
         static double vel_z = 0;
         static double altitude = 0;
@@ -226,24 +255,24 @@ public:
             return;
         }
 
-        if (path_index_ > prev_index) {
-            RCLCPP_INFO(this->get_logger(), "path_index_: %d", (int)path_index_);
-            const FrameData &current_frame = path_data_[path_index_];
-            prev_index = path_index_;
-            // // Convert quaternion to roll/pitch/yaw
-            // double qx = current_frame.imu.orientation.x;
-            // double qy = current_frame.imu.orientation.y;
-            // double qz = current_frame.imu.orientation.z;
-            // double qw = current_frame.imu.orientation.w;
-            // // Calculate yaw
-            // double siny_cosp = 2.0 * (qw * qz + qx * qy);
-            // double cosy_cosp = 1.0 - 2.0 * (qy * qy + qz * qz);
-            // // target_yaw = std::atan2(siny_cosp, cosy_cosp);
+        // if (path_index_ > prev_index) {
+        //     RCLCPP_INFO(this->get_logger(), "path_index_: %d", (int)path_index_);
+        //     const FrameData &current_frame = path_data_[path_index_];
+        //     prev_index = path_index_;
+        //     // Convert quaternion to roll/pitch/yaw
+        //     double qx = current_frame.imu.orientation.x;
+        //     double qy = current_frame.imu.orientation.y;
+        //     double qz = current_frame.imu.orientation.z;
+        //     double qw = current_frame.imu.orientation.w;
+        //     // Calculate yaw
+        //     double siny_cosp = 2.0 * (qw * qz + qx * qy);
+        //     double cosy_cosp = 1.0 - 2.0 * (qy * qy + qz * qz);
+        //     // target_yaw = std::atan2(siny_cosp, cosy_cosp);
 
-            altitude = current_frame.altitude.data;
+        //     altitude = current_frame.altitude.data;
 
-            vel_x = vel;
-        }
+        //     vel_x = vel;
+        // }
         // else {
         //     vel_x -= pitch_kp;
         // }
@@ -252,10 +281,10 @@ public:
         //     pitch_kp = -pitch_kp;
         // }
         
-        vel_x = std::max(-5.0, std::min(5.0, vel_x));
+        // vel_x = std::max(-5.0, std::min(5.0, vel_x));
         // prev_similarity = similarity;
-
         target_yaw = yaw_kp * target_yaw;
+
 
         // Manually rotate body-frame velocity (vel_x=forward, vel_y=left) 
         
@@ -387,7 +416,10 @@ public:
         E = cv::findEssentialMat(q1, q2, K_, cv::USAC_MAGSAC, 0.999, 0.2, mask);
         
         // Pass the mask to recoverPose so it uses only the good inliers
-        cv::recoverPose(E, q1, q2, K_, R, t, mask);
+        int inliers = cv::recoverPose(E, q1, q2, K_, R, t, mask);
+        if (inliers < 10) {
+            return 0.0;
+        }
         
         // Transform translation: t_body = C * t_cam
         cv::Mat t_ros = cam_tf * t;

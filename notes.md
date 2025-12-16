@@ -35,12 +35,13 @@ ros2 bag record -a -o simple_path2
 
 ros2 bag record -o simple_path /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
 
+ros2 bag record -o path_90degree /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
+
 
 sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --console --out=udp:127.0.0.1:14551
 
 ros2 run gps_denied_nav drone_control
-ros2 run gps_denied_nav main --ros-args -p similarity_threshold:=0.2 -p yaw_kp:=0.0
+ros2 run gps_denied_nav main --ros-args -p similarity_threshold:=100 -p yaw_kp:=0.01
 
-ros2 run gps_denied_nav main --ros-args -p yaw_kp:=0.0
 
 

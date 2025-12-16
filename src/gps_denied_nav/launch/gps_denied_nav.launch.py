@@ -6,12 +6,14 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch.actions import DeclareLaunchArgument
-
+from launch.substitutions import PythonExpression
+import math
 
 def generate_launch_description():
     # Declare launch arguments
     pkg_name = LaunchConfiguration('pkg_name')
     world_name = LaunchConfiguration('world_name')
+    gimbal_pitch = LaunchConfiguration('gimbal_pitch')
     
     pkg_name_arg = DeclareLaunchArgument(
         'pkg_name',
@@ -23,6 +25,12 @@ def generate_launch_description():
         'world_name',
         default_value='iris_runway',
         description='The name of the Gazebo world to launch.'
+    )
+
+    gimbal_pitch_arg = DeclareLaunchArgument(
+        'gimbal_pitch',
+        default_value='60.0',
+        description='The pitch angle of the gimbal in degrees.'
     )
 
     # Launch Gazebo with the iris_runway world
@@ -121,13 +129,17 @@ def generate_launch_description():
         }]
     )
 
-    # Set Gimbal to 60 degrees down
+    # Set Gimbal to the desired pitch angle (convert degrees to radians at runtime)
+    # radians = degrees * pi / 180
+    gimbal_pitch_radians = PythonExpression([
+        gimbal_pitch, ' * 3.141592653589793 / 180.0'
+    ])
     set_gimbal_pitch = ExecuteProcess(
         cmd=[
             'ros2', 'topic', 'pub',
             '/gimbal/cmd_pitch',
             'std_msgs/msg/Float64',
-            '{data: 1.0472}', # 60 degrees in radians 
+            ['{data: ', gimbal_pitch_radians, '}'],
             '--once'
         ],
         output='screen'
@@ -138,6 +150,7 @@ def generate_launch_description():
     return LaunchDescription([
         pkg_name_arg,
         world_name_arg,
+        gimbal_pitch_arg,
         gz_sim,
         mavros,
         ros_gz_bridge,

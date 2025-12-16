@@ -61,10 +61,10 @@ public:
     CreatePathNode() : Node("create_path_node"), timer_started_(false)
     {   
         this->declare_parameter<std::string>("feature_detector", "SURF");
-        this->declare_parameter<std::string>("bag_file_path", "simple_path");
-        this->declare_parameter<std::string>("output_file", "simple_path.yaml");
-        this->declare_parameter<double>("similarity_threshold", 0.5);
-        similarity_threshold = this->get_parameter("similarity_threshold").as_double();
+        this->declare_parameter<std::string>("bag_file_path", "path_90degree");
+        this->declare_parameter<std::string>("output_file", "path_90degree_surf.yaml");
+        this->declare_parameter<int>("similarity_threshold", 100);
+        similarity_threshold = this->get_parameter("similarity_threshold").as_int();
 
         K_received_ = false;
 
@@ -231,9 +231,6 @@ public:
                 }
 
                 if (path_data_.empty() || compare_features(des, path_data_.back().features.descriptors) < similarity_threshold) {
-                    if (last_valid_altitude < 10) {
-                        continue;
-                    }
                     frame.features = Features();
                     frame.features.keypoints = kp;
                     frame.features.descriptors = des;
@@ -341,7 +338,7 @@ public:
 
         double match_size = static_cast<double>(good_matches.size());
 
-        return match_size / (double)des1.rows;
+        return match_size;
     }
 
 };
