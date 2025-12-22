@@ -51,7 +51,7 @@ public:
     cv::Ptr<cv::DescriptorMatcher> matcher;
 
     // Parameters
-    double similarity_threshold;
+    int similarity_threshold;
     
     // Feature matching constants
     static constexpr int MIN_DESCRIPTORS_FOR_MATCHING = 2;
@@ -62,7 +62,6 @@ public:
     {   
         this->declare_parameter<std::string>("feature_detector", "SURF");
         this->declare_parameter<std::string>("bag_file_path", "path_90degree");
-        this->declare_parameter<std::string>("output_file", "path_90degree_surf.yaml");
         this->declare_parameter<int>("similarity_threshold", 100);
         similarity_threshold = this->get_parameter("similarity_threshold").as_int();
 
@@ -99,7 +98,8 @@ public:
         rclcpp::Duration elapsed = rclcpp::Clock().now() - start_time;
         std::cout << "Time taken to create path: " << elapsed.seconds() << " seconds" << std::endl;
 
-        save_path(this->get_parameter("output_file").as_string());
+        std::string output_file = storage_options.uri + "_" + feature_detector + ".yaml";
+        save_path(output_file);
 
         exit(0);
     }
@@ -308,12 +308,12 @@ public:
         RCLCPP_INFO(this->get_logger(), "Created path with %zu frames", path_data_.size());
     }
 
-    double compare_features(const cv::Mat& des1 , const cv::Mat& des2)
+    int compare_features(const cv::Mat& des1 , const cv::Mat& des2)
     {
         if (des1.rows < MIN_GOOD_MATCHES || des2.rows < MIN_GOOD_MATCHES)
         {
             // std::cerr << "Warning: No descriptors found or not enough for knnMatch." << std::endl;
-            return 0.0;
+            return 0;
         }
         
         // 2. Feature Matching (FLANN)
@@ -333,10 +333,10 @@ public:
         if (good_matches.size() < MIN_GOOD_MATCHES)
         {
             // std::cerr << "Warning: Not enough good matches: " << good_matches.size() << std::endl;
-            return 0.0;
+            return 0;
         }
 
-        double match_size = static_cast<double>(good_matches.size());
+        int match_size = good_matches.size();
 
         return match_size;
     }

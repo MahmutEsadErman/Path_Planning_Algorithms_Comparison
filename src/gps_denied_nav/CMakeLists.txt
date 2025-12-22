@@ -24,6 +24,7 @@ find_package(OpenCV REQUIRED)
 find_package(mavlink REQUIRED)
 find_package(mavros_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(rosbag2_cpp REQUIRED)
 find_package(rosbag2_storage REQUIRED)
@@ -32,21 +33,12 @@ find_package(rosbag2_transport REQUIRED)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_executable(main src/main.cpp)
-ament_target_dependencies(main rclcpp std_msgs sensor_msgs cv_bridge image_transport ament_index_cpp mavros_msgs geometry_msgs)
+ament_target_dependencies(main rclcpp std_msgs sensor_msgs cv_bridge image_transport ament_index_cpp mavros_msgs geometry_msgs visualization_msgs)
 target_link_libraries(main ${OpenCV_LIBS})
 
 add_executable(create_path src/create_path.cpp)
 ament_target_dependencies(create_path rclcpp std_msgs sensor_msgs cv_bridge image_transport ament_index_cpp mavros_msgs geometry_msgs rosbag2_cpp rosbag2_storage rosbag2_transport)
 target_link_libraries(create_path ${OpenCV_LIBS})
-
-add_executable(detect_features_sift src/detect_features_sift.cpp)
-ament_target_dependencies(detect_features_sift rclcpp std_msgs sensor_msgs cv_bridge image_transport ament_index_cpp)
-target_link_libraries(detect_features_sift ${OpenCV_LIBS})
-
-
-add_executable(detect_features_surf src/detect_features_surf.cpp)
-ament_target_dependencies(detect_features_surf rclcpp std_msgs sensor_msgs cv_bridge image_transport ament_index_cpp)
-target_link_libraries(detect_features_surf ${OpenCV_LIBS})
 
 add_executable(drone_control 
   src/drone_control/drone_controller_node.cpp
@@ -56,9 +48,7 @@ ament_target_dependencies(drone_control rclcpp ament_index_cpp mavlink mavros_ms
 install(TARGETS
   main
   create_path
-  detect_features_sift
   drone_control
-  detect_features_surf
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -55,7 +55,6 @@ public:
 
         // Initialize drone_pose
         drone_pose_ = nullptr;
-        starting_point_ = nullptr;
         target_pose_ = nullptr;
 
         // Timer to publish at 1Hz (required for attitude control)
@@ -129,7 +128,6 @@ private:
 
     // Pose data
     std::shared_ptr<geometry_msgs::msg::Pose> drone_pose_;
-    std::shared_ptr<geometry_msgs::msg::Pose> starting_point_;
     std::shared_ptr<geometry_msgs::msg::PoseStamped> target_pose_;
 
     // Timer

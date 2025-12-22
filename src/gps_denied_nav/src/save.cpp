@@ -1,4 +1,4 @@
-/**
+/*
  * ROS2 Node for controlling drone using MAVLink
  * 
  * Compile with:
@@ -12,7 +12,9 @@
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <geometry_msgs/msg/pose.hpp>
 #include <geometry_msgs/msg/pose_array.hpp>
+#include <geometry_msgs/msg/twist.hpp>
 #include <mavros_msgs/msg/manual_control.hpp>
+#include <mavros_msgs/msg/position_target.hpp>
 #include <cmath>
 #include <thread>
 #include <iostream>
@@ -39,7 +41,10 @@ public:
     int path_index_;
     rclcpp::Publisher<mavros_msgs::msg::ManualControl>::SharedPtr manual_pub_;
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr pose_publisher_;
+    rclcpp::Publisher<mavros_msgs::msg::PositionTarget>::SharedPtr pub_;
+    mavros_msgs::msg::PositionTarget msg_;
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
+    rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_sub_;
     rclcpp::TimerBase::SharedPtr timer_;
     bool timer_started_;
 
@@ -52,19 +57,23 @@ public:
     cv::Mat K_;
     std::string feature_detector;
     cv::Mat cam_tf;
+    double drone_yaw = 0.0;
+    double filtered_yaw_ = 0.0;
+    bool filter_initialized_ = false;
+
 
     FollowPathNode() : Node("follow_path_node"), timer_started_(false)
     {   
         // Initialize path index
         path_index_ = 0;
 
-        this->declare_parameter<std::string>("path_file", "simple_path.yaml");
-        this->declare_parameter<double>("camera_pitch_angle", 60.0);
-        this->declare_parameter<double>("similarity_threshold", 0.6);
+        this->declare_parameter<std::string>("path_file", "path_90degree_surf.yaml");
+        this->declare_parameter<double>("camera_pitch_angle", 90.0);
+        this->declare_parameter<int>("similarity_threshold", 63);
         this->declare_parameter<double>("yaw_kp", 0.1);
-        this->declare_parameter<double>("pitch_kp", 0.1);
+        this->declare_parameter<double>("pitch_kp", 1);
         
-        similarity_threshold = this->get_parameter("similarity_threshold").as_double();
+        similarity_threshold = this->get_parameter("similarity_threshold").as_int();
         
         load_path(this->get_parameter("path_file").as_string());
 
@@ -85,22 +94,26 @@ public:
             matcher = cv::makePtr<cv::FlannBasedMatcher>(cv::makePtr<cv::flann::KDTreeIndexParams>(5));
         }
 
-        // publishers
-        manual_pub_ = this->create_publisher<mavros_msgs::msg::ManualControl>(
-            "/drone/cmd_move",
-            10
-        );
-        pose_publisher_ = this->create_publisher<geometry_msgs::msg::Pose>(
-            "/target_pose",
-            10
-        );
-
         // subscribers
         image_sub_ = this->create_subscription<sensor_msgs::msg::Image>(
             "/camera/image",
             rclcpp::SensorDataQoS(),
             std::bind(&FollowPathNode::image_callback, this, std::placeholders::_1)
         );
+
+        imu_sub_ = this->create_subscription<sensor_msgs::msg::Imu>(
+            "/mavros/imu/data",
+            rclcpp::SensorDataQoS(),
+            std::bind(&FollowPathNode::imu_callback, this, std::placeholders::_1)
+        );
+
+        pose_publisher_ = this->create_publisher<geometry_msgs::msg::Pose>(
+            "/target_pose",
+            10
+        );
+
+        pub_ = this->create_publisher<mavros_msgs::msg::PositionTarget>(
+            "/mavros/setpoint_raw/local", 10);
 
         // Step 1: Define C_Cros_Ccv (OpenCV Cam to ROS-style Cam)
         // OpenCV (Ccv): X-right, Y-down, Z-forward
@@ -123,51 +136,116 @@ public:
         // Step 3: Combine them to get C_B_Ccv (OpenCV Cam to Drone Body)
         cam_tf = C_B_Cros * C_Cros_Ccv;
         
-        follow_path(0, 0);
+    }
+
+    void vel_publish(geometry_msgs::msg::Twist vel, double yaw_rate)
+    {   
+        msg_.coordinate_frame = mavros_msgs::msg::PositionTarget::FRAME_LOCAL_NED;
+
+        // Ignore position, acceleration, and absolute yaw
+        // Enable: velocity (vx, vy, vz) and yaw_rate
+        msg_.type_mask =
+              mavros_msgs::msg::PositionTarget::IGNORE_PX
+            | mavros_msgs::msg::PositionTarget::IGNORE_PY
+            | mavros_msgs::msg::PositionTarget::IGNORE_PZ
+            | mavros_msgs::msg::PositionTarget::IGNORE_AFX
+            | mavros_msgs::msg::PositionTarget::IGNORE_AFY
+            | mavros_msgs::msg::PositionTarget::IGNORE_AFZ
+            | mavros_msgs::msg::PositionTarget::IGNORE_YAW;  // Ignore absolute yaw, use yaw_rate instead
+
+        msg_.velocity = vel.linear;
+        msg_.yaw_rate = yaw_rate;  // rad/s - positive = counter-clockwise (left)
+
+        pub_->publish(msg_);
+    }
+
+    void yaw_publish(double yaw) {
+        msg_.coordinate_frame = mavros_msgs::msg::PositionTarget::FRAME_LOCAL_NED;
+
+        // Ignore position, acceleration, and absolute yaw
+        // Enable: velocity (vx, vy, vz) and yaw_rate
+        msg_.type_mask =
+              mavros_msgs::msg::PositionTarget::IGNORE_PX
+            | mavros_msgs::msg::PositionTarget::IGNORE_PY
+            | mavros_msgs::msg::PositionTarget::IGNORE_PZ
+            | mavros_msgs::msg::PositionTarget::IGNORE_AFX
+            | mavros_msgs::msg::PositionTarget::IGNORE_AFY
+            | mavros_msgs::msg::PositionTarget::IGNORE_AFZ
+            | mavros_msgs::msg::PositionTarget::IGNORE_VX
+            | mavros_msgs::msg::PositionTarget::IGNORE_VY
+            | mavros_msgs::msg::PositionTarget::IGNORE_VZ;
+
+        msg_.yaw = yaw;
+
+        pub_->publish(msg_);
+    }
+
+    void imu_callback(const sensor_msgs::msg::Imu::SharedPtr msg)
+    {   
+        // Calculate yaw
+        double qx = msg->orientation.x;
+        double qy = msg->orientation.y;
+        double qz = msg->orientation.z;
+        double qw = msg->orientation.w;
+        double siny_cosp = 2.0 * (qw * qz + qx * qy);
+        double cosy_cosp = 1.0 - 2.0 * (qy * qy + qz * qz);
+        drone_yaw = std::atan2(siny_cosp, cosy_cosp);
     }
 
     void image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
     {   
-        static double target_yaw = 0;
+        double target_yaw = 0;
+        static auto start = std::chrono::high_resolution_clock::now();
+        std::cout << "Outside of Image callback time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " ms" << std::endl;
+
         cv::Mat image = cv_bridge::toCvShare(msg, "bgr8")->image;
         cv::Mat gray_image;
         cv::cvtColor(image, gray_image, cv::COLOR_BGR2GRAY);
         std::vector<cv::KeyPoint> kp;
         cv::Mat des;
         std::vector<cv::DMatch> good_matches;
+        
+        // Calculate how much time image processing takes
+        start = std::chrono::high_resolution_clock::now();
 
         fe_method->detectAndCompute(gray_image, cv::noArray(), kp, des);
-        double similarity = compare_features(path_data_[path_index_].features.descriptors, des, good_matches);
+        int matches = compare_features(path_data_[path_index_].features.descriptors, des, good_matches);
         
         // Only calculate translation if we have enough good matches
-        if (good_matches.size() >= 10) {
-            target_yaw = calculate_t_with_features(kp, path_data_[path_index_].features.keypoints, good_matches);
+        if (good_matches.size() >= 20) {            
+            target_yaw = calculate_t_with_features(path_data_[path_index_].features.keypoints, kp, good_matches);
+            // target_yaw = filter_yaw(target_yaw);
         } else {
             RCLCPP_WARN(this->get_logger(), "Not enough matches (%zu) for pose estimation", good_matches.size());
         }
 
-        RCLCPP_INFO(this->get_logger(), "path_index_: %d, Similarity: %f, Matches: %zu", (int)path_index_, similarity, good_matches.size());
-        if (similarity > similarity_threshold) {
-            // Increment path index
-            path_index_ += 1;
-            pose_publisher_->publish(path_data_[path_index_].target_pose);
+        RCLCPP_INFO(this->get_logger(), "path_index_: %d, Matches: %d Target Yaw: %f Drone Yaw: %f", (int)path_index_, matches, target_yaw, drone_yaw);
+        if (matches > similarity_threshold) {
             if (path_index_ >= path_data_.size()) {
                 RCLCPP_INFO(this->get_logger(), "Path following completed");
                 return;
             }
+            // Increment path index
+            path_index_ += 1;
+            pose_publisher_->publish(path_data_[path_index_].target_pose);
         }
-        follow_path(similarity, target_yaw);
+        if (path_index_ > 0) {
+            follow_path(matches, target_yaw);
+        }
+
+        std::cout << "image callback time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " ms" << std::endl;
+        start = std::chrono::high_resolution_clock::now();
     }
 
-    void follow_path(double similarity, double target_yaw)
+    void follow_path(int matches, double target_yaw)
     {   
         static int prev_index = -1;  // Use signed int to allow -1 as initial value
         static double yaw_kp = this->get_parameter("yaw_kp").as_double();
-        static double pitch_kp = this->get_parameter("pitch_kp").as_double();
+        static double vel = this->get_parameter("pitch_kp").as_double();
         static double prev_similarity = 0;
-        static double pitch = 0;
-        static double roll = 0;
-        static double yaw = 0;
+        static double vel_x = vel;
+        static double vel_y = 0;
+        static double vel_z = 0;
         static double altitude = 0;
         
         
@@ -176,39 +254,55 @@ public:
             return;
         }
 
-        if (path_index_ > prev_index) {
-            RCLCPP_INFO(this->get_logger(), "path_index_: %d", (int)path_index_);
-            const FrameData &current_frame = path_data_[path_index_];
-            prev_index = path_index_;
-            // Convert quaternion to roll/pitch/yaw
-            double qx = current_frame.imu.orientation.x;
-            double qy = current_frame.imu.orientation.y;
-            double qz = current_frame.imu.orientation.z;
-            double qw = current_frame.imu.orientation.w;
-            // Calculate yaw
-            double siny_cosp = 2.0 * (qw * qz + qx * qy);
-            double cosy_cosp = 1.0 - 2.0 * (qy * qy + qz * qz);
-            yaw = std::atan2(siny_cosp, cosy_cosp);
+        // if (path_index_ > prev_index) {
+        //     RCLCPP_INFO(this->get_logger(), "path_index_: %d", (int)path_index_);
+        //     const FrameData &current_frame = path_data_[path_index_];
+        //     prev_index = path_index_;
+        //     // Convert quaternion to roll/pitch/yaw
+        //     double qx = current_frame.imu.orientation.x;
+        //     double qy = current_frame.imu.orientation.y;
+        //     double qz = current_frame.imu.orientation.z;
+        //     double qw = current_frame.imu.orientation.w;
+        //     // Calculate yaw
+        //     double siny_cosp = 2.0 * (qw * qz + qx * qy);
+        //     double cosy_cosp = 1.0 - 2.0 * (qy * qy + qz * qz);
+        //     // target_yaw = std::atan2(siny_cosp, cosy_cosp);
 
-            altitude = current_frame.altitude.data;
+        //     altitude = current_frame.altitude.data;
 
-            pitch = 10;
-        }
+        //     vel_x = vel;
+        // }
+        // else {
+        //     vel_x -= pitch_kp;
+        // }
+
+        // if (target_yaw > M_PI/2 || target_yaw < 3*M_PI/2) {
+        //     pitch_kp = -pitch_kp;
+        // }
         
-        pitch += pitch_kp * (similarity - prev_similarity);
-        pitch = std::max(-100.0, std::min(100.0, pitch));
-        prev_similarity = similarity;
+        // vel_x = std::max(-5.0, std::min(5.0, vel_x));
+        // prev_similarity = similarity;
+        target_yaw = yaw_kp * target_yaw;
 
-        yaw += yaw_kp * (target_yaw - yaw);
 
-        // Create and publish manual control message
-        mavros_msgs::msg::ManualControl manual_msg;
-        manual_msg.x = pitch;  // Pitch value
-        manual_msg.y = roll;   // Roll value
-        manual_msg.z = altitude;  // Altitude value
-        manual_msg.r = yaw;    // Yaw value
-        manual_pub_->publish(manual_msg);
-        RCLCPP_INFO(this->get_logger(), "p: %.2f, r: %.2f, y: %.2f, alt: %.2f", pitch, roll, yaw, altitude);
+        // Manually rotate body-frame velocity (vel_x=forward, vel_y=left) 
+        double cos_yaw = std::cos(drone_yaw);
+        double sin_yaw = std::sin(drone_yaw);
+        
+        // Apply rotation: body -> global ENU
+        double global_vx = cos_yaw * vel_x - sin_yaw * vel_y;
+        double global_vy = sin_yaw * vel_x + cos_yaw * vel_y;
+        double global_vz = vel_z;  // Z velocity is unaffected by yaw rotation
+
+        // Create and publish manual control message with rotated velocities
+        geometry_msgs::msg::Twist vel_msg;
+        vel_msg.linear.x = global_vx;
+        vel_msg.linear.y = global_vy;
+        vel_msg.linear.z = global_vz;
+        vel_publish(vel_msg, target_yaw);
+        RCLCPP_INFO(this->get_logger(), 
+                    "Body: vx=%.2f, vy=%.2f | yaw=%.2f rad, yaw_rate=%.2f rad/s", 
+                    vel_x, vel_y, drone_yaw, target_yaw);
     }
 
     void load_path(const std::string& filename)
@@ -231,7 +325,10 @@ public:
         for (auto it = frames.begin(); it != frames.end(); ++it) {
             cv::FileNode frame_node = *it;
             FrameData frame;
-
+            
+            if ((double)frame_node["altitude"] < 49) {
+                continue;
+            }
             // Keypoints
             frame_node["keypoints"] >> frame.features.keypoints;
             // Descriptors
@@ -273,12 +370,12 @@ public:
         RCLCPP_INFO(this->get_logger(), "Loaded path with %zu frames", path_data_.size());
     }
 
-    double compare_features(const cv::Mat& des1 , const cv::Mat& des2, std::vector<cv::DMatch> &good_matches)
+    int compare_features(const cv::Mat& des1 , const cv::Mat& des2, std::vector<cv::DMatch> &good_matches)
     {
         if (des1.rows < 2 || des2.rows < 2)
         {
             // std::cerr << "Warning: No descriptors found or not enough for knnMatch." << std::endl;
-            return 0.0;
+            return 0;
         }
         
         // 2. Feature Matching (FLANN)
@@ -286,7 +383,7 @@ public:
         matcher->knnMatch(des1, des2, matches, 2); // k=2 for ratio test
         
         // 3. Ratio Test
-        float ratio_test_k = 0.6f;
+        float ratio_test_k = 0.75f;
         for (const auto& match_pair : matches)
         {
             if (match_pair.size() == 2 && match_pair[0].distance < ratio_test_k * match_pair[1].distance)
@@ -295,9 +392,9 @@ public:
             }
         }
 
-        double match_size = static_cast<double>(good_matches.size());
+        int match_size = static_cast<int>(good_matches.size());
 
-        return match_size / (double)std::min(des1.rows, des2.rows);
+        return match_size;
     }
 
     double calculate_t_with_features(const std::vector<cv::KeyPoint>& kp1, const std::vector<cv::KeyPoint>& kp2, const std::vector<cv::DMatch>& good_matches)
@@ -317,7 +414,10 @@ public:
         E = cv::findEssentialMat(q1, q2, K_, cv::USAC_MAGSAC, 0.999, 0.2, mask);
         
         // Pass the mask to recoverPose so it uses only the good inliers
-        cv::recoverPose(E, q1, q2, K_, R, t, mask);
+        int inliers = cv::recoverPose(E, q1, q2, K_, R, t, mask);
+        if (inliers < 10) {
+            return 0.0;
+        }
         
         // Transform translation: t_body = C * t_cam
         cv::Mat t_ros = cam_tf * t;
