@@ -54,15 +54,13 @@ public:
     int similarity_threshold;
     
     // Feature matching constants
-    static constexpr int MIN_DESCRIPTORS_FOR_MATCHING = 2;
     static constexpr float RATIO_TEST_THRESHOLD = 0.7f;
-    static constexpr int MIN_GOOD_MATCHES = 10;
 
     CreatePathNode() : Node("create_path_node"), timer_started_(false)
     {   
         this->declare_parameter<std::string>("feature_detector", "SURF");
         this->declare_parameter<std::string>("bag_file_path", "path_90degree");
-        this->declare_parameter<int>("similarity_threshold", 100);
+        this->declare_parameter<int>("similarity_threshold", 60);
         similarity_threshold = this->get_parameter("similarity_threshold").as_int();
 
         K_received_ = false;
@@ -226,11 +224,11 @@ public:
                 cv::Mat des;
                 fe_method->detectAndCompute(current_mat, cv::Mat(), kp, des);
 
-                if (kp.size() < MIN_GOOD_MATCHES) {
+                if (kp.size() < similarity_threshold+10) {
                     continue;
                 }
 
-                if (path_data_.empty() || compare_features(des, path_data_.back().features.descriptors) < similarity_threshold) {
+                if (path_data_.empty() || compare_features(des, path_data_.back().features.descriptors)) {
                     frame.features = Features();
                     frame.features.keypoints = kp;
                     frame.features.descriptors = des;
@@ -270,6 +268,7 @@ public:
                     gyro_x_sum = 0; gyro_y_sum = 0; gyro_z_sum = 0;
                     imu_count = 0;
 
+                    // std::cout << "kp size: " << kp.size() << std::endl;
                     // cv::imshow("Image", current_mat);
                     // cv::waitKey(1);
                 }
@@ -308,12 +307,12 @@ public:
         RCLCPP_INFO(this->get_logger(), "Created path with %zu frames", path_data_.size());
     }
 
-    int compare_features(const cv::Mat& des1 , const cv::Mat& des2)
+    bool compare_features(const cv::Mat& des1 , const cv::Mat& des2)
     {
-        if (des1.rows < MIN_GOOD_MATCHES || des2.rows < MIN_GOOD_MATCHES)
+        if (des1.rows < similarity_threshold || des2.rows < similarity_threshold)
         {
             // std::cerr << "Warning: No descriptors found or not enough for knnMatch." << std::endl;
-            return 0;
+            return false;
         }
         
         // 2. Feature Matching (FLANN)
@@ -330,15 +329,11 @@ public:
             }
         }
 
-        if (good_matches.size() < MIN_GOOD_MATCHES)
-        {
-            // std::cerr << "Warning: Not enough good matches: " << good_matches.size() << std::endl;
-            return 0;
+        if (good_matches.size() > similarity_threshold) {
+            return false;
         }
 
-        int match_size = good_matches.size();
-
-        return match_size;
+        return true;
     }
 
 };

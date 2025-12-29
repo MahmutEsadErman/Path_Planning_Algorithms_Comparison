@@ -118,7 +118,7 @@
     <include>
       <uri>model://my_iris</uri>
       <name>iris_with_gimbal</name>
-      <pose degrees="true">198 48 -21.97 0 0 0</pose>
+      <pose degrees="true">198 48 -22 0 0 90</pose>
     </include>
 
   </world>

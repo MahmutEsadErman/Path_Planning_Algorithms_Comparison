@@ -8,6 +8,26 @@
 class RvizVisualizationsNode : public rclcpp::Node
 {
 public:
+    // Subscribers
+    rclcpp::Subscription<geometry_msgs::msg::PoseArray>::SharedPtr pose_sub_;
+    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr target_pose_sub_;
+
+    // Publishers
+    rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr real_path_pub_;
+    rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr target_path_pub_;
+
+    // Path messages
+    nav_msgs::msg::Path real_path_msg_;
+    nav_msgs::msg::Path target_path_msg_;
+
+    // Pose data
+    std::shared_ptr<geometry_msgs::msg::Pose> drone_pose_;
+    std::shared_ptr<geometry_msgs::msg::PoseStamped> target_pose_;
+    std::shared_ptr<geometry_msgs::msg::Point> starting_point_;
+
+    // Timer
+    rclcpp::TimerBase::SharedPtr timer_;
+
     /**
      * @brief Initializes the node, publishers, subscribers, and service clients.
      */
@@ -54,8 +74,8 @@ public:
         RCLCPP_INFO(this->get_logger(), "Waiting for publishers to be ready...");
 
         // Initialize drone_pose
-        drone_pose_ = nullptr;
-        target_pose_ = nullptr;
+        drone_pose_ = std::make_shared<geometry_msgs::msg::Pose>();
+        target_pose_ = std::make_shared<geometry_msgs::msg::PoseStamped>();
 
         // Timer to publish at 1Hz (required for attitude control)
         timer_ = this->create_wall_timer(
@@ -75,6 +95,9 @@ private:
         // Assuming the desired pose is the third one in the array
         if (msg->poses.size() > 2) {
             drone_pose_ = std::make_shared<geometry_msgs::msg::Pose>(msg->poses[2]);
+            if (starting_point_ == nullptr) {
+                starting_point_ = std::make_shared<geometry_msgs::msg::Point>(msg->poses[2].position);
+            }
         } else {
             RCLCPP_WARN(this->get_logger(), "PoseArray does not contain enough poses.");
         }
@@ -85,12 +108,21 @@ private:
      */
     void target_pose_callback(const geometry_msgs::msg::Pose::SharedPtr msg)
     {
+        // Wait until we have a starting point
+        if (starting_point_ == nullptr) {
+            return;
+        }
+        
         geometry_msgs::msg::PoseStamped stamped_pose;
         stamped_pose.header.frame_id = "map";
         stamped_pose.header.stamp = this->get_clock()->now();
         stamped_pose.pose = *msg;
         
         target_pose_ = std::make_shared<geometry_msgs::msg::PoseStamped>(stamped_pose);
+
+        // Offset the target pose by the starting point
+        target_pose_->pose.position.x -= starting_point_->x;
+        target_pose_->pose.position.y -= starting_point_->y;
         target_path_msg_.poses.push_back(*target_pose_);
         target_path_pub_->publish(target_path_msg_);
     }
@@ -100,13 +132,18 @@ private:
      */
     void send_path()
     {
-        // Wait until we have received the first pose
-        if (drone_pose_ == nullptr) {
+        // Wait until we have received the first pose and established starting point
+        if (starting_point_ == nullptr) {
             return;
         }
 
         geometry_msgs::msg::PoseStamped stamped_pose;
         stamped_pose.pose = *drone_pose_;
+        
+        // Offset the drone pose by the starting point using the local copy
+        stamped_pose.pose.position.x -= starting_point_->x;
+        stamped_pose.pose.position.y -= starting_point_->y;
+
         stamped_pose.header.frame_id = "map";
         stamped_pose.header.stamp = this->get_clock()->now();
         real_path_msg_.poses.push_back(stamped_pose);
@@ -114,24 +151,6 @@ private:
         real_path_pub_->publish(real_path_msg_);
     }
 
-    // Subscribers
-    rclcpp::Subscription<geometry_msgs::msg::PoseArray>::SharedPtr pose_sub_;
-    rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr target_pose_sub_;
-
-    // Publishers
-    rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr real_path_pub_;
-    rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr target_path_pub_;
-
-    // Path messages
-    nav_msgs::msg::Path real_path_msg_;
-    nav_msgs::msg::Path target_path_msg_;
-
-    // Pose data
-    std::shared_ptr<geometry_msgs::msg::Pose> drone_pose_;
-    std::shared_ptr<geometry_msgs::msg::PoseStamped> target_pose_;
-
-    // Timer
-    rclcpp::TimerBase::SharedPtr timer_;
 };
 
 int main(int argc, char** argv)

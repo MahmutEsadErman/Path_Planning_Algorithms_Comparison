@@ -40,10 +40,10 @@ public:
     // Member variables
     std::vector<FrameData> path_data_;
     int path_index_;
-    bool timer_started_;
     std::shared_ptr<geometry_msgs::msg::Pose> gt_pose;
     double starting_yaw_;
     geometry_msgs::msg::Point starting_position_;
+    path_following_time_;
 
 
     // Publishers
@@ -63,7 +63,7 @@ public:
     cv::Ptr<cv::DescriptorMatcher> matcher;
 
     // Parameters
-    double similarity_threshold;
+    int similarity_threshold;
     cv::Mat K_;
     std::string feature_detector;
     cv::Mat cam_tf;
@@ -73,7 +73,7 @@ public:
     bool DEBUG;
     bool ready_;
 
-    FollowPathNode() : Node("follow_path_node"), timer_started_(false)
+    FollowPathNode() : Node("follow_path_node")
     {   
         // Initialize path index
         path_index_ = 0;
@@ -84,9 +84,10 @@ public:
         this->declare_parameter<std::string>("path_file", "path_90degree_surf.yaml");
         this->declare_parameter<double>("camera_pitch_angle", 90.0);
         this->declare_parameter<int>("similarity_threshold", 63);
-        this->declare_parameter<double>("yaw_kp", 0.01);
-        this->declare_parameter<double>("pitch_kp", 3);
+        this->declare_parameter<double>("yaw_kp", 0.05);
+        this->declare_parameter<double>("pitch_kp", 5);
         this->declare_parameter<bool>("debug", true);
+        
         
         similarity_threshold = this->get_parameter("similarity_threshold").as_int();
         DEBUG = this->get_parameter("debug").as_bool();
@@ -217,15 +218,19 @@ public:
         starting_yaw_ = std::atan2(siny_cosp, cosy_cosp);
         msg_.yaw = starting_yaw_;
 
-        // save starting position for error calculations
-        starting_position_ = gt_pose->position;
-
-        // Publish the last point as a marker in RViz
-        publish_last_point_marker();
-
         pub_->publish(msg_);
+
+        std::cout << "Starting yaw: " << starting_yaw_ << std::endl;
         
         if (std::abs(drone_yaw - starting_yaw_) < 0.1) {
+            // save starting position for error calculations
+            starting_position_ = gt_pose->position;
+
+            // Publish the last point as a marker in RViz
+            publish_last_point_marker();
+
+            path_following_time_ = std::chrono::high_resolution_clock::now();
+
             ready_ = true;
             RCLCPP_INFO(this->get_logger(), "Yaw aligned! Starting path following. Target yaw: %.2f, Drone yaw: %.2f", starting_yaw_, drone_yaw);
         }
@@ -304,7 +309,9 @@ public:
             if (path_index_ >= path_data_.size()-1) {
                 image_sub_.reset();
                 double avg_error = calculate_error() / path_data_.size();
-                RCLCPP_INFO(this->get_logger(), "Path following completed. Average error: %f m", avg_error);
+                path_following_time_ = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - path_following_time_).count();
+                RCLCPP_INFO(this->get_logger(), "Path following completed. \n Average error: %f m", avg_error);
+                RCLCPP_INFO(this->get_logger(), "Time taken: %f s", path_following_time_);
                 return;
             }
 

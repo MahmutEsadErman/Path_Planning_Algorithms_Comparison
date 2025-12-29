@@ -6,6 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /Path1
+        - /Path2
       Splitter Ratio: 0.5
     Tree Height: 338
   - Class: rviz_common/Selection
@@ -92,9 +94,9 @@ Visualization Manager:
       Line Width: 0.029999999329447746
       Name: Path
       Offset:
-        X: -198
-        Y: -48
-        Z: 22
+        X: 0
+        Y: 0
+        Z: 0
       Pose Color: 85; 0; 0
       Pose Style: None
       Radius: 0.029999999329447746
@@ -120,9 +122,9 @@ Visualization Manager:
       Line Width: 0.029999999329447746
       Name: Path
       Offset:
-        X: -198
-        Y: -48
-        Z: 22
+        X: 0
+        Y: 0
+        Z: 0
       Pose Color: 255; 85; 255
       Pose Style: None
       Radius: 0.029999999329447746
@@ -140,7 +142,7 @@ Visualization Manager:
       Enabled: true
       Name: Marker
       Namespaces:
-        {}
+        path_endpoint: true
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -204,11 +206,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 1.5309518575668335
+      Scale: 0.20403285324573517
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
-      X: 181.68414306640625
-      Y: 7.682775974273682
+      X: 289.9332580566406
+      Y: -462.2015380859375
     Saved: ~
 Window Geometry:
   Displays:

@@ -1,124 +1,253 @@
-<?xml version="1.0" ?>
-<sdf version="1.9">
-  <world name="nb_park_modified">
-    <physics name="1ms" type="ignore">
+<sdf version='1.10'>
+  <world name='nb_park_modified'>
+    <physics name='1ms' type='ignore'>
       <max_step_size>0.001</max_step_size>
-      <real_time_factor>1.0</real_time_factor>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
     </physics>
-
-    <plugin filename="gz-sim-physics-system"
-      name="gz::sim::systems::Physics">
-    </plugin>
-    <plugin
-      filename="gz-sim-sensors-system"
-      name="gz::sim::systems::Sensors">
+    <plugin name='gz::sim::systems::Physics' filename='gz-sim-physics-system'/>
+    <plugin name='gz::sim::systems::Sensors' filename='gz-sim-sensors-system'>
       <render_engine>ogre2</render_engine>
     </plugin>
-    <plugin filename="gz-sim-user-commands-system"
-      name="gz::sim::systems::UserCommands">
-    </plugin>
-    <plugin filename="gz-sim-scene-broadcaster-system"
-      name="gz::sim::systems::SceneBroadcaster">
-    </plugin>
-    <plugin filename="gz-sim-imu-system"
-      name="gz::sim::systems::Imu">
-    </plugin>
-    <plugin filename="gz-sim-navsat-system"
-      name="gz::sim::systems::NavSat">
-    </plugin>
-
+    <plugin name='gz::sim::systems::UserCommands' filename='gz-sim-user-commands-system'/>
+    <plugin name='gz::sim::systems::SceneBroadcaster' filename='gz-sim-scene-broadcaster-system'/>
+    <plugin name='gz::sim::systems::Imu' filename='gz-sim-imu-system'/>
+    <plugin name='gz::sim::systems::NavSat' filename='gz-sim-navsat-system'/>
     <scene>
-      <ambient>1.0 1.0 1.0</ambient>
-      <background>0.8 0.8 0.8</background>
-      <sky></sky>
+      <ambient>1 1 1 1</ambient>
+      <background>0.800000012 0.800000012 0.800000012 1</background>
+      <sky/>
+      <shadows>true</shadows>
     </scene>
-
     <spherical_coordinates>
-      <latitude_deg>-35.363262</latitude_deg>
-      <longitude_deg>149.165237</longitude_deg>
+      <latitude_deg>-35.363261999999999</latitude_deg>
+      <longitude_deg>149.16523699999999</longitude_deg>
       <elevation>584</elevation>
       <heading_deg>0</heading_deg>
       <surface_model>EARTH_WGS84</surface_model>
     </spherical_coordinates>
-
-    <light type="directional" name="sun">
-      <cast_shadows>true</cast_shadows>
-      <pose>0 0 10 0 0 0</pose>
-      <diffuse>0.8 0.8 0.8 1</diffuse>
-      <specular>0.8 0.8 0.8 1</specular>
-      <attenuation>
-        <range>1000</range>
-        <constant>0.9</constant>
-        <linear>0.01</linear>
-        <quadratic>0.001</quadratic>
-      </attenuation>
-      <direction>-0.5 0.1 -0.9</direction>
-    </light>
-
-    <model name="axes">
-      <static>1</static>
-      <link name="link">
-        <visual name="r">
-          <cast_shadows>0</cast_shadows>
-          <pose>5 0 0.1 0 0 0</pose>
+    <gravity>0 0 -9.8000000000000007</gravity>
+    <magnetic_field>5.5644999999999998e-06 2.2875799999999999e-05 -4.2388400000000002e-05</magnetic_field>
+    <atmosphere type='adiabatic'/>
+    <model name='axes'>
+      <static>true</static>
+      <link name='link'>
+        <visual name='r'>
+          <cast_shadows>false</cast_shadows>
+          <pose>5 0 0.10000000000000001 0 0 0</pose>
           <geometry>
             <box>
               <size>10 0.01 0.01</size>
             </box>
           </geometry>
           <material>
-            <ambient>1 0 0 0.8</ambient>
-            <diffuse>1 0 0 0.8</diffuse>
-            <emissive>1 0 0 0.8</emissive>
-            <specular>0.5 0.5 0.5 0.8</specular>
+            <ambient>1 0 0 0.800000012</ambient>
+            <diffuse>1 0 0 0.800000012</diffuse>
+            <emissive>1 0 0 0.800000012</emissive>
+            <specular>0.5 0.5 0.5 0.800000012</specular>
           </material>
         </visual>
-        <visual name="g">
-          <cast_shadows>0</cast_shadows>
-          <pose>0 5 0.1 0 0 0</pose>
+        <visual name='g'>
+          <cast_shadows>false</cast_shadows>
+          <pose>0 5 0.10000000000000001 0 0 0</pose>
           <geometry>
             <box>
               <size>0.01 10 0.01</size>
             </box>
           </geometry>
           <material>
-            <ambient>0 1 0 0.8</ambient>
-            <diffuse>0 1 0 0.8</diffuse>
-            <emissive>0 1 0 0.8</emissive>
-            <specular>0.5 0.5 0.5 0.8</specular>
+            <ambient>0 1 0 0.800000012</ambient>
+            <diffuse>0 1 0 0.800000012</diffuse>
+            <emissive>0 1 0 0.800000012</emissive>
+            <specular>0.5 0.5 0.5 0.800000012</specular>
           </material>
         </visual>
-        <visual name="b">
-          <cast_shadows>0</cast_shadows>
-          <pose>0 0 5.1 0 0 0</pose>
+        <visual name='b'>
+          <cast_shadows>false</cast_shadows>
+          <pose>0 0 5.0999999999999996 0 0 0</pose>
           <geometry>
             <box>
               <size>0.01 0.01 10</size>
             </box>
           </geometry>
           <material>
-            <ambient>0 0 1 0.8</ambient>
-            <diffuse>0 0 1 0.8</diffuse>
-            <emissive>0 0 1 0.8</emissive>
-            <specular>0.5 0.5 0.5 0.8</specular>
+            <ambient>0 0 1 0.800000012</ambient>
+            <diffuse>0 0 1 0.800000012</diffuse>
+            <emissive>0 0 1 0.800000012</emissive>
+            <specular>0.5 0.5 0.5 0.800000012</specular>
           </material>
         </visual>
-        <sensor name="navsat_sensor" type="navsat">
-          <always_on>1</always_on>
+        <sensor name='navsat_sensor' type='navsat'>
+          <always_on>true</always_on>
           <update_rate>1</update_rate>
+          <gps/>
         </sensor>
+        <pose>0 0 0 0 0 0</pose>
+        <inertial>
+          <pose>0 0 0 0 0 0</pose>
+          <mass>1</mass>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+        </inertial>
+        <enable_wind>false</enable_wind>
       </link>
+      <pose>0 0 0 0 0 0</pose>
+      <self_collide>false</self_collide>
     </model>
-    
     <include>
-      <uri>model://nb_park</uri>
-      <pose degrees="true">0 0 0 0 0 0</pose>
+      <uri>file:///ros2_tutorials/new_models/nb_park</uri>
+      <name>nb_park</name>
+      <pose>0 0 0 0 0 0</pose>
     </include>
-
     <include>
-      <uri>model://my_iris</uri>
-      <pose degrees="true">40 0 -22 0 0 0</pose>
+      <uri>file:///ros2_tutorials/new_models/my_iris</uri>
+      <name>iris_with_gimbal</name>
+      <pose>-399.99641131716874 469.99794625480678 -22.291227690094164 4.5473823428983794e-09 -6.8792664084013431e-09 0.010529868204952083</pose>
     </include>
-
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house</name>
+      <pose>-433.82598876953125 414.79400634765625 -22.378429412841797 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
+      <name>gazebo</name>
+      <pose>-415.63400268554688 453.57998657226562 -22.222232818603516 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_0</name>
+      <pose>-443.40499877929688 370.29998779296875 -21.293680191040039 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
+      <name>gazebo_0</name>
+      <pose>-319.76800537109375 315.5 -22.964633941650391 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
+      <name>gazebo_1</name>
+      <pose>-350.45999145507812 340.4110107421875 -21.431751251220703 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
+      <name>gazebo_2</name>
+      <pose>-343.22500610351562 296.0369873046875 -19.034019470214844 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_1</name>
+      <pose>-392.07699584960938 195.00300598144531 -21.622209548950195 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_2</name>
+      <pose>-377.67599487304688 392.99301147460938 -21.731176376342773 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_3</name>
+      <pose>-371.52398681640625 302.12899780273438 -20.420906066894531 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
+      <name>radio_tower</name>
+      <pose>-434.48300170898438 476.18301391601562 -24.286643981933594 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
+      <name>radio_tower_0</name>
+      <pose>-468.47000122070312 346.7030029296875 -21.429645538330078 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
+      <name>radio_tower_1</name>
+      <pose>-458.11099243164062 247.73899841308594 -20.838987350463867 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
+      <name>radio_tower_2</name>
+      <pose>-457.36700439453125 122.70999908447266 -21.248849868774414 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school</name>
+      <pose>-405.29400634765625 425.22799682617188 -22.612766265869141 0 0 2.3852099745761515</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school_0</name>
+      <pose>-300.05300903320312 285.25799560546875 -22.866430282592773 0 0 2.5596599776023861</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school_1</name>
+      <pose>-367.03799438476562 362.01199340820312 -21.863283157348633 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/pine tree/6</uri>
+      <name>Pine Tree</name>
+      <pose>-366.5780029296875 457.94570922851562 -22.616500854492188 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/hatchback blue/5</uri>
+      <name>hatchback_blue</name>
+      <pose>-401.89898681640625 503.7659912109375 -22.463174819946289 0 0 -1.479460013848457</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/hatchback blue/5</uri>
+      <name>hatchback_blue_0</name>
+      <pose>-392.17098999023438 463.32901000976562 -22.430208206176758 0 0 -1.2804200647264197</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree</name>
+      <pose>-426.32901000976562 454.38101196289062 -22.915380477905273 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office</name>
+      <pose>-359.82998657226562 320.76199340820312 -21.671333312988281 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_0</name>
+      <pose>-377.55999755859375 321.20700073242188 -22.58326530456543 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_1</name>
+      <pose>-383.87200927734375 285.25299072265625 -21.889890670776367 0 0 -1.1863699484599743</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station</name>
+      <pose>-351.50900268554688 449.30801391601562 -23.021919250488281 0 0 1.9848499766337313</pose>
+    </include>
+    <light name='sun' type='directional'>
+      <pose>0 0 10 0 0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1</intensity>
+      <direction>-0.5 0.10000000000000001 -0.90000000000000002</direction>
+      <diffuse>0.800000012 0.800000012 0.800000012 1</diffuse>
+      <specular>0.800000012 0.800000012 0.800000012 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <linear>0.01</linear>
+        <constant>0.90000000000000002</constant>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <spot>
+        <inner_angle>0</inner_angle>
+        <outer_angle>0</outer_angle>
+        <falloff>0</falloff>
+      </spot>
+    </light>
   </world>
 </sdf>

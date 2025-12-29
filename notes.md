@@ -33,54 +33,25 @@ echo 'export GZ_SIM_RESOURCE_PATH=/ros2_tutorials/new_models:${GZ_SIM_RESOURCE_P
 
 ros2 bag record -a -o simple_path2
 
-ros2 bag record -o zigzag_yol /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
+ros2 bag record -o uzun_yol3 /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
 
 ros2 bag record -o path_90degree /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
 
 
-sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --console --out=udp:127.0.0.1:14551
+# Başlangıç noktasını bizim okula ayarladım
+sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --console --out=udp:127.0.0.1:14551 -l 41.0258025,28.8884930,0,0
+
 
 ros2 run gps_denied_nav drone_control
-ros2 run gps_denied_nav main --ros-args -p similarity_threshold:=100 -p yaw_kp:=0.01
+
+ros2 run gps_denied_nav main --ros-args -p yaw_kp:=0.05 -p pitch_kp:=5.0 -p path_file:=uzun_yol3_SURF.yaml
+
+ros2 run gps_denied_nav create_path --ros-args -p bag_file_path:=uzun_yol3
 
 
+ros2 run gps_denied_nav drone_control
 
-
-
-
-
-
-
-
-
-        // if (path_index_ > prev_index) {
-        //     RCLCPP_INFO(this->get_logger(), "path_index_: %d", (int)path_index_);
-        //     const FrameData &current_frame = path_data_[path_index_];
-        //     prev_index = path_index_;
-        //     // Convert quaternion to roll/pitch/yaw
-        //     double qx = current_frame.imu.orientation.x;
-        //     double qy = current_frame.imu.orientation.y;
-        //     double qz = current_frame.imu.orientation.z;
-        //     double qw = current_frame.imu.orientation.w;
-        //     // Calculate yaw
-        //     double siny_cosp = 2.0 * (qw * qz + qx * qy);
-        //     double cosy_cosp = 1.0 - 2.0 * (qy * qy + qz * qz);
-        //     // target_yaw = std::atan2(siny_cosp, cosy_cosp);
-
-        //     altitude = current_frame.altitude.data;
-
-        //     vel_x = vel;
-        // }
-        // else {
-        //     vel_x -= pitch_kp;
-        // }
-
-        // if (target_yaw > M_PI/2 || target_yaw < 3*M_PI/2) {
-        //     pitch_kp = -pitch_kp;
-        // }
-        
-        // vel_x = std::max(-5.0, std::min(5.0, vel_x));
-        // prev_similarity = similarity;
+message SET_GPS_GLOBAL_ORIGIN 0 41.0258025 28.8884930 600000 0
 
 
 

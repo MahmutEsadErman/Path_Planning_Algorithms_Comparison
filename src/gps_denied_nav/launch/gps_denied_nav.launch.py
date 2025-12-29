@@ -1,12 +1,13 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, ExecuteProcess
+from launch.actions import IncludeLaunchDescription, ExecuteProcess, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource, AnyLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import PythonExpression
+
 import math
 
 def generate_launch_description():
@@ -144,8 +145,6 @@ def generate_launch_description():
         ],
         output='screen'
     )
-
-
     
     return LaunchDescription([
         pkg_name_arg,
@@ -155,7 +154,12 @@ def generate_launch_description():
         mavros,
         ros_gz_bridge,
         rviz,
-        rviz_visualizer,
         # drone_control,
-        set_gimbal_pitch
+        TimerAction(
+            period=3.0,
+            actions=[
+                set_gimbal_pitch, 
+                rviz_visualizer
+            ]
+        )
     ])

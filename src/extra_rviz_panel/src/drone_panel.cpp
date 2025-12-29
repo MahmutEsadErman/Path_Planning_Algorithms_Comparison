@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDir>
+#include <QTimer>
 
 namespace extra_rviz_panel
 {
@@ -45,6 +46,8 @@ void DronePanel::onInitialize()
     mode_client_ = node_->create_client<mavros_msgs::srv::SetMode>("/mavros/set_mode");
     arming_client_ = node_->create_client<mavros_msgs::srv::CommandBool>("/mavros/cmd/arming");
     takeoff_client_ = node_->create_client<mavros_msgs::srv::CommandTOL>("/mavros/cmd/takeoff");
+    mavlink_pub_ = node_->create_publisher<mavros_msgs::msg::Mavlink>("/mavlink/to", 10);
+    gps_origin_pub_ = node_->create_publisher<geographic_msgs::msg::GeoPointStamped>("/mavros/global_position/set_gp_origin", 10);
     
     // Try to load saved values
     loadPidValues();
@@ -52,10 +55,6 @@ void DronePanel::onInitialize()
     onTuningModeChanged(tuning_mode_checkbox_->checkState());
     updateParameters();
 }
-
-// ... (keep loadPidValues and createPidGroup as is, I will skip them in replacement if possible, but I need to replace the constructor and onInitialize)
-
-// I will use a separate replace for arm() implementation at the end of file.
 
 
 void DronePanel::loadPidValues()
@@ -234,6 +233,9 @@ void DronePanel::save(rviz_common::Config config) const
 
 void DronePanel::onArmClicked()
 {   
+    // Send set GPS global origin
+    sendSetGpsGlobalOrigin();
+
     if (!mode_client_) return;
 
     auto request = std::make_shared<mavros_msgs::srv::SetMode::Request>();
@@ -248,9 +250,8 @@ void DronePanel::onArmClicked()
 
     arm();
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-
-    takeoff();
+    // Use QTimer to delay takeoff without blocking the UI thread
+    QTimer::singleShot(1000, this, &DronePanel::takeoff);
 }
 
 void DronePanel::takeoff()
@@ -273,7 +274,8 @@ void DronePanel::takeoff()
 }
 
 void DronePanel::arm()
-{
+{   
+
     if (!param_client_ || !arming_client_) return;
     
     // Call arming service
@@ -292,6 +294,25 @@ void DronePanel::arm()
     std::vector<rclcpp::Parameter> params;
     params.push_back(rclcpp::Parameter("hover_throttle", 500.0));
     param_client_->set_parameters(params);
+}
+
+void DronePanel::sendSetGpsGlobalOrigin()
+{
+    if (!gps_origin_pub_) {
+        RCLCPP_ERROR(node_->get_logger(), "GPS origin publisher not initialized");
+        return;
+    }
+
+    geographic_msgs::msg::GeoPointStamped msg;
+    msg.header.stamp = node_->now();
+    msg.header.frame_id = "map";
+    msg.position.latitude = 41.0258025;   // degrees
+    msg.position.longitude = 28.8884930;  // degrees
+    msg.position.altitude = 0.0;       // meters
+
+    gps_origin_pub_->publish(msg);
+    RCLCPP_INFO(node_->get_logger(), "Sent SET_GPS_GLOBAL_ORIGIN via MAVROS (lat: %.7f, lon: %.7f, alt: %.1f)",
+                msg.position.latitude, msg.position.longitude, msg.position.altitude);
 }
 
 } // namespace extra_rviz_panel

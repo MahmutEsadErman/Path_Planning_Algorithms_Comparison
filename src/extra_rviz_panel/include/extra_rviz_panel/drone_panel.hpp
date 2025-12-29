@@ -6,6 +6,8 @@
 #include <mavros_msgs/srv/command_bool.hpp>
 #include <mavros_msgs/srv/set_mode.hpp>
 #include <mavros_msgs/srv/command_tol.hpp>
+#include <mavros_msgs/msg/mavlink.hpp>
+#include <geographic_msgs/msg/geo_point_stamped.hpp>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -30,6 +32,7 @@ public:
     void save(rviz_common::Config config) const override;
     void arm();
     void takeoff();
+    void sendSetGpsGlobalOrigin();
 
 protected Q_SLOTS:
     void updateParameters();
@@ -72,6 +75,8 @@ protected:
     rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr arming_client_;
     rclcpp::Client<mavros_msgs::srv::SetMode>::SharedPtr mode_client_;
     rclcpp::Client<mavros_msgs::srv::CommandTOL>::SharedPtr takeoff_client_;
+    rclcpp::Publisher<mavros_msgs::msg::Mavlink>::SharedPtr mavlink_pub_;
+    rclcpp::Publisher<geographic_msgs::msg::GeoPointStamped>::SharedPtr gps_origin_pub_;
 
     void createPidGroup(const QString & title, 
                        QDoubleSpinBox*& kp, QDoubleSpinBox*& ki, QDoubleSpinBox*& kd, QDoubleSpinBox*& setpoint,

@@ -24,6 +24,7 @@ find_package(tf2 REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(mavros_msgs REQUIRED)
+find_package(geographic_msgs REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 qt5_wrap_cpp(MOC_FILES
@@ -54,6 +55,7 @@ ament_target_dependencies(extra_rviz_panel_lib
   tf2
   cv_bridge
   mavros_msgs
+  geographic_msgs
 )
 target_link_libraries(extra_rviz_panel_lib ${OpenCV_LIBS} Qt5::Widgets)
 install(TARGETS extra_rviz_panel_lib
