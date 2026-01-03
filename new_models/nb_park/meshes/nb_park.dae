@@ -17,26 +17,37 @@
   </asset>
   <library_images>
     <image id="MapFBXASC032FBXASC03531-image" name="MapFBXASC032FBXASC03531">
+      <init_from>../materials/textures/Road_Albedo.png</init_from>
     </image>
     <image id="MapFBXASC032FBXASC0353-image" name="MapFBXASC032FBXASC0353">
+      <init_from>../materials/textures/Wall_Albedo.png</init_from>
     </image>
     <image id="MapFBXASC032FBXASC0353_ncl1_1-image" name="MapFBXASC032FBXASC0353_ncl1_1">
+      <init_from>../materials/textures/Dock_Albedo.png</init_from>
     </image>
     <image id="MapFBXASC032FBXASC0358-image" name="MapFBXASC032FBXASC0358">
+      <init_from>../materials/textures/Concrete_Albedo.png</init_from>
     </image>
     <image id="MapFBXASC032FBXASC0354-image" name="MapFBXASC032FBXASC0354">
+      <init_from>../materials/textures/Railing_Albedo.png</init_from>
     </image>
     <image id="MapFBXASC032FBXASC0358_ncl1_1-image" name="MapFBXASC032FBXASC0358_ncl1_1">
+      <init_from>../materials/textures/DoorWindow_Albedo.png</init_from>
     </image>
     <image id="MapFBXASC032FBXASC0353_ncl1_2-image" name="MapFBXASC032FBXASC0353_ncl1_2">
+      <init_from>../materials/textures/Window_Albedo.png</init_from>
     </image>
     <image id="MapFBXASC032FBXASC03528-image" name="MapFBXASC032FBXASC03528">
+      <init_from>../materials/textures/Roof_Albedo.png</init_from>
     </image>
     <image id="MapFBXASC032FBXASC03516-image" name="MapFBXASC032FBXASC03516">
+      <init_from>../materials/textures/PalmTree_Albedo.png</init_from>
     </image>
     <image id="MapFBXASC032FBXASC03521-image" name="MapFBXASC032FBXASC03521">
+      <init_from>../materials/textures/Asphalt_Albedo.png</init_from>
     </image>
     <image id="MapFBXASC032FBXASC0353_ncl1_3-image" name="MapFBXASC032FBXASC0353_ncl1_3">
+      <init_from>../materials/textures/Tree_Albedo.png</init_from>
     </image>
   </library_images>
   <library_materials>

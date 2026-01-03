@@ -7,12 +7,14 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/float64.hpp>
+#include <std_msgs/msg/bool.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <geometry_msgs/msg/pose.hpp>
 #include <geometry_msgs/msg/pose_array.hpp>
 #include <geometry_msgs/msg/twist.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
 #include <mavros_msgs/msg/manual_control.hpp>
 #include <mavros_msgs/msg/position_target.hpp>
 #include <visualization_msgs/msg/marker.hpp>
@@ -39,23 +41,26 @@ class FollowPathNode : public rclcpp::Node {
 public:
     // Member variables
     std::vector<FrameData> path_data_;
+    std::vector<std::pair<Features, geometry_msgs::msg::Pose>> path_history_;
     int path_index_;
-    std::shared_ptr<geometry_msgs::msg::Pose> gt_pose;
+    std::shared_ptr<geometry_msgs::msg::Pose> gt_pose_;
     double starting_yaw_;
     geometry_msgs::msg::Point starting_position_;
-    path_following_time_;
-
+    std::chrono::time_point<std::chrono::high_resolution_clock> path_following_time_;
+    double drone_yaw = 0.0;
+    double current_vel_magnitude_ = 0.0;
 
     // Publishers
-    rclcpp::Publisher<mavros_msgs::msg::ManualControl>::SharedPtr manual_pub_;
-    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr pose_publisher_;
-    rclcpp::Publisher<mavros_msgs::msg::PositionTarget>::SharedPtr pub_;
+    rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr target_pose_publisher_;
+    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr returning_publisher_;
+    rclcpp::Publisher<mavros_msgs::msg::PositionTarget>::SharedPtr vel_publisher_;
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr marker_publisher_;
 
     // Subscribers
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
     rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_sub_;
-    rclcpp::Subscription<geometry_msgs::msg::PoseArray>::SharedPtr gt_pose_sub_;
+    rclcpp::Subscription<geometry_msgs::msg::PoseArray>::SharedPtr gt_pose__sub_;
+    rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr vel_sub_;
     mavros_msgs::msg::PositionTarget msg_;
 
     // comparing image similarity
@@ -64,14 +69,17 @@ public:
 
     // Parameters
     int similarity_threshold;
+    int min_feature_size;
     cv::Mat K_;
-    std::string feature_detector;
     cv::Mat cam_tf;
-    double drone_yaw = 0.0;
+    std::string feature_detector;
+    double vel_;
 
     // Flags
     bool DEBUG;
     bool ready_;
+    bool lost_path_;
+    bool returning_;
 
     FollowPathNode() : Node("follow_path_node")
     {   
@@ -80,16 +88,20 @@ public:
 
         // Initialize ready flag
         ready_ = false;
+        lost_path_ = false;
+        returning_ = false;
 
         this->declare_parameter<std::string>("path_file", "path_90degree_surf.yaml");
         this->declare_parameter<double>("camera_pitch_angle", 90.0);
         this->declare_parameter<int>("similarity_threshold", 63);
+        this->declare_parameter<int>("min_feature_size", 20);
         this->declare_parameter<double>("yaw_kp", 0.05);
-        this->declare_parameter<double>("pitch_kp", 5);
+        this->declare_parameter<double>("velocity", 5);
         this->declare_parameter<bool>("debug", true);
         
-        
         similarity_threshold = this->get_parameter("similarity_threshold").as_int();
+        min_feature_size = this->get_parameter("min_feature_size").as_int();
+        vel_ = this->get_parameter("velocity").as_double();
         DEBUG = this->get_parameter("debug").as_bool();
 
         marker_publisher_ = this->create_publisher<visualization_msgs::msg::Marker>(
@@ -130,18 +142,30 @@ public:
             std::bind(&FollowPathNode::imu_callback, this, std::placeholders::_1)
         );
 
-        gt_pose_sub_ = this->create_subscription<geometry_msgs::msg::PoseArray>(
+        gt_pose__sub_ = this->create_subscription<geometry_msgs::msg::PoseArray>(
             "/simulation_pose_info",
             rclcpp::SensorDataQoS(),
-            std::bind(&FollowPathNode::gt_pose_callback, this, std::placeholders::_1)
+            std::bind(&FollowPathNode::gt_pose__callback, this, std::placeholders::_1)
         );
 
-        pose_publisher_ = this->create_publisher<geometry_msgs::msg::Pose>(
+        vel_sub_ = this->create_subscription<geometry_msgs::msg::TwistStamped>(
+            "/mavros/local_position/velocity_local",
+            rclcpp::SensorDataQoS(),
+            std::bind(&FollowPathNode::vel_callback, this, std::placeholders::_1)
+        );
+
+        // publishers
+        target_pose_publisher_ = this->create_publisher<geometry_msgs::msg::Pose>(
             "/target_pose",
             10
         );
 
-        pub_ = this->create_publisher<mavros_msgs::msg::PositionTarget>(
+        returning_publisher_ = this->create_publisher<std_msgs::msg::Bool>(
+            "/returning_status",
+            10
+        );
+
+        vel_publisher_ = this->create_publisher<mavros_msgs::msg::PositionTarget>(
             "/mavros/setpoint_raw/local", 10);
 
         // Step 1: Define C_Cros_Ccv (OpenCV Cam to ROS-style Cam)
@@ -185,10 +209,10 @@ public:
         msg_.velocity = vel.linear;
         msg_.yaw = yaw;
 
-        pub_->publish(msg_);
+        vel_publisher_->publish(msg_);
     }
 
-    void turn_to_starting_yaw()
+    void yaw_publish(double yaw)
     {   
         // in this function we turn to the starting yaw angle and save starting position for other calculations
         msg_.coordinate_frame = mavros_msgs::msg::PositionTarget::FRAME_LOCAL_NED;
@@ -209,26 +233,36 @@ public:
         msg_.velocity.y = 0.0;
         msg_.velocity.z = 0.0;
 
-        double qx = path_data_[path_data_.size()-1].imu.orientation.x;
-        double qy = path_data_[path_data_.size()-1].imu.orientation.y;
-        double qz = path_data_[path_data_.size()-1].imu.orientation.z;
-        double qw = path_data_[path_data_.size()-1].imu.orientation.w;
-        double siny_cosp = 2.0 * (qw * qz + qx * qy);
-        double cosy_cosp = 1.0 - 2.0 * (qy * qy + qz * qz);
-        starting_yaw_ = std::atan2(siny_cosp, cosy_cosp);
-        msg_.yaw = starting_yaw_;
+        msg_.yaw = yaw;
 
-        pub_->publish(msg_);
+        vel_publisher_->publish(msg_);
+    }
 
-        std::cout << "Starting yaw: " << starting_yaw_ << std::endl;
+    void turn_to_starting_yaw()
+    {   
+        if (!lost_path_) {
+            double qx = path_data_[path_data_.size()-1].imu.orientation.x;
+            double qy = path_data_[path_data_.size()-1].imu.orientation.y;
+            double qz = path_data_[path_data_.size()-1].imu.orientation.z;
+            double qw = path_data_[path_data_.size()-1].imu.orientation.w;
+            double siny_cosp = 2.0 * (qw * qz + qx * qy);
+            double cosy_cosp = 1.0 - 2.0 * (qy * qy + qz * qz);
+            starting_yaw_ = std::atan2(siny_cosp, cosy_cosp);
+        }
+        yaw_publish(starting_yaw_);
+
+        if (DEBUG) {
+            std::cout << "Starting yaw: " << starting_yaw_ << std::endl;
+        }
         
-        if (std::abs(drone_yaw - starting_yaw_) < 0.1) {
+        if (std::abs(drone_yaw - starting_yaw_) < 0.05) {
             // save starting position for error calculations
-            starting_position_ = gt_pose->position;
+            starting_position_ = gt_pose_->position;
 
             // Publish the last point as a marker in RViz
             publish_last_point_marker();
-
+            
+            // initialize this to calculate path following time 
             path_following_time_ = std::chrono::high_resolution_clock::now();
 
             ready_ = true;
@@ -246,8 +280,8 @@ public:
         static double m = std::tan(starting_yaw_);
         static double payda = std::sqrt(m * m + 1);
 
-        double x = gt_pose->position.x - starting_position_.x;
-        double y = gt_pose->position.y - starting_position_.y;
+        double x = gt_pose_->position.x - starting_position_.x;
+        double y = gt_pose_->position.y - starting_position_.y;
 
         double error = std::abs(-m * x + y) / payda;
         error_sum += error;
@@ -266,81 +300,165 @@ public:
         drone_yaw = std::atan2(siny_cosp, cosy_cosp);
     }
 
+    void vel_callback(const geometry_msgs::msg::TwistStamped::SharedPtr msg)
+    {   
+        double vx = msg->twist.linear.x;
+        double vy = msg->twist.linear.y;
+        double vz = msg->twist.linear.z;
+        current_vel_magnitude_ = std::sqrt(vx*vx + vy*vy + vz*vz);
+    }
+
     void image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
     {   
-        static auto start = std::chrono::high_resolution_clock::now();
-        if (DEBUG) {
-            std::cout << "Outside of Image callback time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " ms" << std::endl;
-        }
-
-        if (!ready_) {
-            turn_to_starting_yaw();
-            return;
-        }
-
         double target_yaw = 0;
+        static int match_size_buff[10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+        static int match_buff_sum = 0;
+        static int frame_index = 0;
         cv::Mat image = cv_bridge::toCvShare(msg, "bgr8")->image;
         cv::Mat gray_image;
         cv::cvtColor(image, gray_image, cv::COLOR_BGR2GRAY);
         std::vector<cv::KeyPoint> kp;
         cv::Mat des;
         std::vector<cv::DMatch> good_matches;
+        static double vel = vel_;
         
-        // Calculate how much time image processing takes
-        if (DEBUG) {
-            start = std::chrono::high_resolution_clock::now();
-        }
-
-        fe_method->detectAndCompute(gray_image, cv::noArray(), kp, des);
-        compare_features(path_data_[path_index_].features.descriptors, des, good_matches);
-        
-        // Only calculate translation if we have enough good matches
-        if (good_matches.size() >= 20) {            
-            target_yaw = calculate_t_with_features(path_data_[path_index_].features.keypoints, kp, good_matches);
-        } else if (DEBUG){
-            RCLCPP_WARN(this->get_logger(), "Not enough matches (%zu) for pose estimation", good_matches.size());
-        }
-
-        if (DEBUG) {
-            RCLCPP_INFO(this->get_logger(), "path_index_: %d, Matches: %ld Target Yaw: %f Drone Yaw: %f", (int)path_index_, good_matches.size(), target_yaw, drone_yaw);
-        }
-
-        if (good_matches.size() > similarity_threshold) {
-            if (path_index_ >= path_data_.size()-1) {
-                image_sub_.reset();
-                double avg_error = calculate_error() / path_data_.size();
-                path_following_time_ = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - path_following_time_).count();
-                RCLCPP_INFO(this->get_logger(), "Path following completed. \n Average error: %f m", avg_error);
-                RCLCPP_INFO(this->get_logger(), "Time taken: %f s", path_following_time_);
+        if (!returning_) {
+            // If the uav is not turning to the starting yaw
+            if (!ready_) {
+                turn_to_starting_yaw();
                 return;
             }
 
-            calculate_error();
-            // Increment path index
-            path_index_ += 1;
-            pose_publisher_->publish(path_data_[path_index_].target_pose);
+            // Detect features
+            fe_method->detectAndCompute(gray_image, cv::noArray(), kp, des);
+
+            // Compare features with the last frame (only if path_history_ is not empty)
+            std::vector<cv::DMatch> last_frame_matches;
+            if (!path_history_.empty()) {
+                compare_features(path_history_.back().first.descriptors, des, last_frame_matches);
+            }
+
+            // Save path history - initialize with first frame or add if different enough
+            if (kp.size() >= static_cast<size_t>(similarity_threshold + 10) && 
+                (path_history_.empty() || last_frame_matches.size() < static_cast<size_t>(similarity_threshold))) {
+                    Features frame;
+                    frame.keypoints = kp;
+                    frame.descriptors = des;
+                    path_history_.push_back(std::pair<Features, geometry_msgs::msg::Pose>(frame, *gt_pose_));
+            }
+
+            if (lost_path_) {
+                yaw_publish(drone_yaw);
+                if (current_vel_magnitude_ < 0.5) {
+                    path_index_ = 0;
+                    returning_ = true;
+                    ready_ = false;
+                    starting_yaw_ = drone_yaw + M_PI;
+                    
+                    // publish returning message
+                    std_msgs::msg::Bool bool_msg;
+                    bool_msg.data = true;
+                    returning_publisher_->publish(bool_msg);
+
+                    RCLCPP_INFO(this->get_logger(), "Stopped. Now turning around.");
+                    RCLCPP_INFO(this->get_logger(), "path history size: %ld", path_history_.size());
+                }
+                return;
+            }
+
+            // Compare features with the current path point
+            compare_features(path_data_[path_index_].features.descriptors, des, good_matches);
+            
+            // Only calculate translation if we have enough good matches
+            if (good_matches.size() >= min_feature_size) {            
+                target_yaw = calculate_t_with_features(path_data_[path_index_].features.keypoints, kp, good_matches);
+            } 
+            // If we lost the path, first stop then go back to home
+            else if (match_size_buff[9] != -1 && match_buff_sum/10 < min_feature_size){ 
+                lost_path_ = true;
+                RCLCPP_INFO(this->get_logger(), "\n---Lost the path. Stopping...---\n");
+            }
+
+            if (good_matches.size() > similarity_threshold) {
+                if (path_index_ >= path_data_.size()-1) {
+                    vel = 0;
+                    image_sub_.reset();
+                    double avg_error = calculate_error() / path_data_.size();
+                    auto elapsed_time = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - path_following_time_).count();
+                    RCLCPP_INFO(this->get_logger(), "Path following completed. \n Average error: %f m", avg_error);
+                    RCLCPP_INFO(this->get_logger(), "Time taken: %ld s", elapsed_time);
+                    return;
+                }
+
+                calculate_error();
+
+                // Increment path index
+                path_index_ += 1;
+                target_pose_publisher_->publish(path_data_[path_index_].target_pose);
+            }
+        }
+        else { // Go back to home
+            // Turn yaw to opposite direction
+            if (!ready_) {
+                turn_to_starting_yaw();
+                return;
+            }
+
+            if (path_history_.empty()) {
+                RCLCPP_WARN(this->get_logger(), "Path history is empty, cannot backtrack.");
+                return;
+            }
+
+            int history_idx = path_history_.size() - 1 - path_index_;
+
+            // Detect and compare features
+            fe_method->detectAndCompute(gray_image, cv::noArray(), kp, des);
+            compare_features(path_history_[history_idx].first.descriptors, des, good_matches);
+            
+            // Only calculate translation if we have enough good matches
+            if (good_matches.size() >= min_feature_size) {            
+                target_yaw = calculate_t_with_features(path_history_[history_idx].first.keypoints, kp, good_matches);
+            } 
+
+            if (good_matches.size() > similarity_threshold) {
+                if (path_index_ >= path_history_.size()-1) {
+                    vel = 0;
+                    image_sub_.reset();
+                    double avg_error = calculate_error() / path_history_.size();
+                    auto elapsed_time = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - path_following_time_).count();
+                    RCLCPP_INFO(this->get_logger(), "Backtracking completed. \n Average error: %f m", avg_error);
+                    RCLCPP_INFO(this->get_logger(), "Time taken: %ld s", elapsed_time);
+                    return;
+                }
+
+                calculate_error();
+
+                // Increment path index
+                path_index_ += 1;
+            }
+
         }
 
-        follow_path(good_matches.size(), target_yaw);
-
-        if (DEBUG) {
-            std::cout << "image callback time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " ms" << std::endl;
-            start = std::chrono::high_resolution_clock::now();
+        if (path_index_ > 1) {
+            follow_path(vel, target_yaw);
+            if (!lost_path_) {
+                match_buff_sum -= match_size_buff[frame_index];
+                match_buff_sum += good_matches.size();
+                match_size_buff[frame_index] = good_matches.size();
+                frame_index = (frame_index+1)%10;
+            }
+            if (DEBUG) {
+                RCLCPP_INFO(this->get_logger(), "path_index_: %d, Matches: %ld Target Yaw: %f Drone Yaw: %f", (int)path_index_, good_matches.size(), target_yaw, drone_yaw);
+            }
         }
     }
 
-    void follow_path(int matches, double target_yaw)
+    void follow_path(double vel, double target_yaw)
     {   
         static double yaw_kp = this->get_parameter("yaw_kp").as_double();
-        static double vel = this->get_parameter("pitch_kp").as_double();
-        static double vel_x = vel;
-        static double vel_y = 0;
-        static double vel_z = 0;
-        static double altitude = 0;
-
-        if (path_index_ < 1) {
-            return;
-        }
+        double vel_x = vel;
+        double vel_y = 0;
+        double vel_z = 0;
 
         if (DEBUG) {
             RCLCPP_INFO(this->get_logger(), 
@@ -348,15 +466,7 @@ public:
                         drone_yaw, target_yaw);
         }
 
-        // Stopping at the end logic
-        if (path_index_ >= path_data_.size()) {
-            vel_x = 0;
-            vel_y = 0;
-            vel_z = 0;
-        }
-
         target_yaw = yaw_kp * target_yaw + drone_yaw;
-        // target_yaw = target_yaw * yaw_kp;
 
         // Manually rotate body-frame velocity (vel_x=forward, vel_y=left) 
         double cos_yaw = std::cos(drone_yaw);
@@ -520,10 +630,6 @@ public:
         // Transform translation: t_body = C * t_cam
         cv::Mat t_ros = cam_tf * t;
 
-        if (DEBUG) {
-            std::cout << "Translation: " << t_ros << std::endl;
-        }
-
         // Calculate target angle from translation vector
         // atan2(y, x) where y=Y_component (left), x=X_component (forward)
         double target_angle = std::atan2(t_ros.at<double>(1), t_ros.at<double>(0));
@@ -534,11 +640,11 @@ public:
         return target_angle;
     }
 
-    void gt_pose_callback(const geometry_msgs::msg::PoseArray::SharedPtr msg)
+    void gt_pose__callback(const geometry_msgs::msg::PoseArray::SharedPtr msg)
     {
         // Assuming the desired pose is the third one in the array
         if (msg->poses.size() > 2) {
-            gt_pose = std::make_shared<geometry_msgs::msg::Pose>(msg->poses[2]);
+            gt_pose_ = std::make_shared<geometry_msgs::msg::Pose>(msg->poses[2]);
         } else {
             RCLCPP_WARN(this->get_logger(), "PoseArray does not contain enough poses.");
         }

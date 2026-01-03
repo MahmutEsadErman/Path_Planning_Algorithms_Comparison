@@ -3,6 +3,7 @@
 #include <geometry_msgs/msg/pose_array.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <nav_msgs/msg/path.hpp>
+#include <std_msgs/msg/bool.hpp>
 #include <memory>
 
 class RvizVisualizationsNode : public rclcpp::Node
@@ -11,19 +12,23 @@ public:
     // Subscribers
     rclcpp::Subscription<geometry_msgs::msg::PoseArray>::SharedPtr pose_sub_;
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr target_pose_sub_;
+    rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr returning_sub_;
 
     // Publishers
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr real_path_pub_;
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr target_path_pub_;
+    rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr return_path_pub_;
 
     // Path messages
     nav_msgs::msg::Path real_path_msg_;
     nav_msgs::msg::Path target_path_msg_;
+    nav_msgs::msg::Path return_path_msg_;
 
     // Pose data
     std::shared_ptr<geometry_msgs::msg::Pose> drone_pose_;
     std::shared_ptr<geometry_msgs::msg::PoseStamped> target_pose_;
     std::shared_ptr<geometry_msgs::msg::Point> starting_point_;
+    bool returning_ = false;
 
     // Timer
     rclcpp::TimerBase::SharedPtr timer_;
@@ -52,6 +57,12 @@ public:
             std::bind(&RvizVisualizationsNode::target_pose_callback, this, std::placeholders::_1)
         );
 
+        returning_sub_ = this->create_subscription<std_msgs::msg::Bool>(
+            "/returning_status",
+            10,
+            std::bind(&RvizVisualizationsNode::returning_callback, this, std::placeholders::_1)
+        );
+
         // Publishers
         real_path_pub_ = this->create_publisher<nav_msgs::msg::Path>(
             "/drone/real_path",
@@ -63,12 +74,20 @@ public:
             10
         );
 
+        return_path_pub_ = this->create_publisher<nav_msgs::msg::Path>(
+            "/drone/return_path",
+            10
+        );
+
         // Initialize path messages
         real_path_msg_.header.stamp = this->get_clock()->now();
         real_path_msg_.header.frame_id = "map";
 
         target_path_msg_.header.stamp = this->get_clock()->now();
         target_path_msg_.header.frame_id = "map";
+
+        return_path_msg_.header.stamp = this->get_clock()->now();
+        return_path_msg_.header.frame_id = "map";
 
         // Give publishers time to establish connections
         RCLCPP_INFO(this->get_logger(), "Waiting for publishers to be ready...");
@@ -127,6 +146,11 @@ private:
         target_path_pub_->publish(target_path_msg_);
     }
 
+    void returning_callback(const std_msgs::msg::Bool::SharedPtr msg)
+    {
+        returning_ = msg->data;
+    }
+
     /**
      * @brief Sends the path data.
      */
@@ -146,9 +170,15 @@ private:
 
         stamped_pose.header.frame_id = "map";
         stamped_pose.header.stamp = this->get_clock()->now();
-        real_path_msg_.poses.push_back(stamped_pose);
-
-        real_path_pub_->publish(real_path_msg_);
+        
+        if (returning_) {
+            return_path_msg_.poses.push_back(stamped_pose);
+            return_path_pub_->publish(return_path_msg_);
+        }
+        else {
+            real_path_msg_.poses.push_back(stamped_pose);
+            real_path_pub_->publish(real_path_msg_);
+        }
     }
 
 };

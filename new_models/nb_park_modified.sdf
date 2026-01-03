@@ -108,7 +108,7 @@
     <include>
       <uri>file:///ros2_tutorials/new_models/my_iris</uri>
       <name>iris_with_gimbal</name>
-      <pose>-399.99641131716874 469.99794625480678 -22.291227690094164 4.5473823428983794e-09 -6.8792664084013431e-09 0.010529868204952083</pose>
+      <pose>-399.99606405463487 469.9981442231159 -22.291228690805472 8.0014423888624336e-09 -3.11593384311595e-10 0.009494366261089026</pose>
     </include>
     <include>
       <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
@@ -122,26 +122,6 @@
     </include>
     <include>
       <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_0</name>
-      <pose>-443.40499877929688 370.29998779296875 -21.293680191040039 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
-      <name>gazebo_0</name>
-      <pose>-319.76800537109375 315.5 -22.964633941650391 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
-      <name>gazebo_1</name>
-      <pose>-350.45999145507812 340.4110107421875 -21.431751251220703 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
-      <name>gazebo_2</name>
-      <pose>-343.22500610351562 296.0369873046875 -19.034019470214844 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
       <name>collapsed_house_1</name>
       <pose>-392.07699584960938 195.00300598144531 -21.622209548950195 0 0 0</pose>
     </include>
@@ -151,24 +131,9 @@
       <pose>-377.67599487304688 392.99301147460938 -21.731176376342773 0 0 0</pose>
     </include>
     <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_3</name>
-      <pose>-371.52398681640625 302.12899780273438 -20.420906066894531 0 0 0</pose>
-    </include>
-    <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
       <name>radio_tower</name>
       <pose>-434.48300170898438 476.18301391601562 -24.286643981933594 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
-      <name>radio_tower_0</name>
-      <pose>-468.47000122070312 346.7030029296875 -21.429645538330078 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
-      <name>radio_tower_1</name>
-      <pose>-458.11099243164062 247.73899841308594 -20.838987350463867 0 0 0</pose>
     </include>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
@@ -183,27 +148,17 @@
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
       <name>school_0</name>
-      <pose>-300.05300903320312 285.25799560546875 -22.866430282592773 0 0 2.5596599776023861</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
-      <name>school_1</name>
-      <pose>-367.03799438476562 362.01199340820312 -21.863283157348633 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/pine tree/6</uri>
-      <name>Pine Tree</name>
-      <pose>-366.5780029296875 457.94570922851562 -22.616500854492188 0 0 0</pose>
+      <pose>-406.56979370117188 227.84426879882812 -22.866399765014648 0 0 2.5596599776023861</pose>
     </include>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/hatchback blue/5</uri>
       <name>hatchback_blue</name>
-      <pose>-401.89898681640625 503.7659912109375 -22.463174819946289 0 0 -1.479460013848457</pose>
+      <pose>-401.89898681640625 503.7659912109375 -22.463174819946289 0 0 -1.4794600138484575</pose>
     </include>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/hatchback blue/5</uri>
       <name>hatchback_blue_0</name>
-      <pose>-392.17098999023438 463.32901000976562 -22.430208206176758 0 0 -1.2804200647264197</pose>
+      <pose>-392.17098999023438 463.32901000976562 -21.225421905517578 0 0 -1.2804200647264197</pose>
     </include>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
@@ -216,19 +171,459 @@
       <pose>-359.82998657226562 320.76199340820312 -21.671333312988281 0 0 0</pose>
     </include>
     <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_0</name>
-      <pose>-377.55999755859375 321.20700073242188 -22.58326530456543 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_1</name>
-      <pose>-383.87200927734375 285.25299072265625 -21.889890670776367 0 0 -1.1863699484599743</pose>
-    </include>
-    <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
       <name>fire_station</name>
       <pose>-351.50900268554688 449.30801391601562 -23.021919250488281 0 0 1.9848499766337313</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school_2</name>
+      <pose>-439.42401123046875 87.90789794921875 -22.021156311035156 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_2</name>
+      <pose>-447.28399658203125 -28.287099838256836 -21.607700347900391 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_3</name>
+      <pose>-435.72799682617188 110.93900299072266 -22.583250045776367 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_4</name>
+      <pose>-453.85101318359375 47.675300598144531 -22.004959106445312 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_5</name>
+      <pose>-429.28399658203125 -200.63800048828125 -21.556241989135742 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_0</name>
+      <pose>-431.15347290039062 -8.1914300918579102 -22.545200347900391 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_1</name>
+      <pose>-459.86700439453125 6.3795275688171387 -18.673999786376953 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_2</name>
+      <pose>-438.21878051757812 -35.320899963378906 -22.926399230957031 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_0</name>
+      <pose>-456.306396484375 -8.2398099899291992 -21.042800903320312 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_1</name>
+      <pose>-381.00399780273438 -118.62200164794922 -22.200899124145508 0 0 1.3859251736268487</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_2</name>
+      <pose>-471.04901123046875 -193.90199279785156 -22.803600311279297 0 0 1.4998476300719512</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school_3</name>
+      <pose>-429.39938354492188 -141.32525634765625 -22.139999389648438 0 0 1.3203199903023428</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_6</name>
+      <pose>-408.45901489257812 -200.8070068359375 -23.005100250244141 0 0 -1.0676079336621211</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_3</name>
+      <pose>-405.06399536132812 -220.7412109375 -20.660100936889648 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_4</name>
+      <pose>-379.3665771484375 -171.95399475097656 -20.081899642944336 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_5</name>
+      <pose>-414.10000610351562 -174.81500244140625 -22.316999435424805 0 0 -0.63002946693417938</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_6</name>
+      <pose>-454.5142822265625 -37.649898529052734 -24.843000411987305 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
+      <name>radio_tower_3</name>
+      <pose>-485.59463500976562 -230.88200378417969 -22.919500350952148 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_7</name>
+      <pose>-418.12200927734375 196.96258544921875 -21.611400604248047 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school_4</name>
+      <pose>-413.73150634765625 -298.22262573242188 -19.17140007019043 0 0 2.4194999971124336</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school_5</name>
+      <pose>-443.59698486328125 -218.91299438476562 -15.753581047058105 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/hatchback/3</uri>
+      <name>hatchback</name>
+      <pose>-423.8909912109375 -181.45799255371094 -18.690000534057617 0 0 1.0544322073139305</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_8</name>
+      <pose>-407.0421142578125 -413.53799438476562 -21.450899124145508 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_9</name>
+      <pose>-411.87298583984375 -275.7969970703125 -20.380075454711914 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_7</name>
+      <pose>-391.05499267578125 -310.12899780273438 -18.270151138305664 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_8</name>
+      <pose>-435.85598754882812 -255.23699951171875 -5.2746953964233398 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
+      <name>radio_tower_4</name>
+      <pose>-431.40872192382812 -495.47293090820312 -24.771299362182617 0 0 0.40047798941322732</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_3</name>
+      <pose>-374.83456420898438 -535.53350830078125 -20.986400604248047 0 0 -1.0574900615832203</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_4</name>
+      <pose>-413.302001953125 -376.4580078125 -15.116100311279297 0 0 0.71984200677586707</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_5</name>
+      <pose>-373.97622680664062 -186.65800476074219 -10.372599601745605 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_6</name>
+      <pose>-438.90301513671875 -162.90199279785156 -18.673164367675781 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school_6</name>
+      <pose>-371.65301513671875 -325.2919921875 -21.778575897216797 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_9</name>
+      <pose>-359.656005859375 -353.82000732421875 -13.900755882263184 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_10</name>
+      <pose>-360.38299560546875 -387.55300903320312 -8.4529819488525391 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_10</name>
+      <pose>-366.1409912109375 -429.50299072265625 -19.549594879150391 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_11</name>
+      <pose>-378.52200317382812 -143.91000366210938 -17.65570068359375 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_7</name>
+      <pose>-382.32379150390625 -570.46600341796875 -21.033100128173828 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_8</name>
+      <pose>-375.5159912109375 -451.8389892578125 -21.419637680053711 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school_7</name>
+      <pose>-364.12149047851562 484.52572631835938 -21.927099227905273 0 0 -0.9405139747149035</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_11</name>
+      <pose>-417.94854736328125 480.19601440429688 -23.379199981689453 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_12</name>
+      <pose>-415.7349853515625 472.3800048828125 -18.458166122436523 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_13</name>
+      <pose>-371.6929931640625 462.65200805664062 -17.064201354980469 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school_8</name>
+      <pose>-380.16387939453125 52.340255737304688 -21.802783966064453 -0.052398699734743044 0.0060460395824771954 -1.4560200324313053</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_4</name>
+      <pose>-384.61898803710938 93.369003295898438 -22.891265869140625 0 0 -0.77013502802845524</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_14</name>
+      <pose>-393.00299072265625 168.26199340820312 -19.422966003417969 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_15</name>
+      <pose>-403.41400146484375 152.44000244140625 -15.093615531921387 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_16</name>
+      <pose>-444.25 5.4465899467468262 -23.611019134521484 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_17</name>
+      <pose>-449.77499389648438 -53.658298492431641 -11.19293212890625 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_18</name>
+      <pose>-378.7869873046875 -156.08247375488281 -6.8069000244140625 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_19</name>
+      <pose>-413.15301513671875 -334.8179931640625 -12.42994213104248 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_20</name>
+      <pose>-403.15499877929688 -363.04901123046875 -17.369630813598633 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_21</name>
+      <pose>-404.17300415039062 -394.8900146484375 -21.540544509887695 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_22</name>
+      <pose>-401.739013671875 -437.89700317382812 -12.153423309326172 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_23</name>
+      <pose>-382.02700805664062 -476.93600463867188 -15.457744598388672 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_24</name>
+      <pose>-366.80999755859375 -372.92898559570312 -14.361514091491699 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_25</name>
+      <pose>-364.59298706054688 -408.27200317382812 -12.32293701171875 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school_9</name>
+      <pose>-420.66000366210938 -428.96701049804688 -22.237968444824219 0 0 -1.2757899771058507</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_5</name>
+      <pose>-445.71499633789062 296.44601440429688 -21.557989120483398 0 0 0.88071501745540703</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_6</name>
+      <pose>-390.28298950195312 305.64401245117188 -18.829900741577148 0 0 -0.77792770489493579</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_7</name>
+      <pose>-451.60299682617188 340.09100341796875 -19.985467910766602 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_8</name>
+      <pose>-387.94900512695312 335.06201171875 -21.08216667175293 0 0 0.67018196652461892</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_9</name>
+      <pose>-446.77499389648438 358.75799560546875 -21.721399307250977 0 0 -1.427290064630808</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_26</name>
+      <pose>-427.8389892578125 379.30599975585938 -20.278030395507812 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_27</name>
+      <pose>-464.885009765625 314.15701293945312 -19.629575729370117 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_28</name>
+      <pose>-446.83099365234375 320.60501098632812 -23.925205230712891 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_29</name>
+      <pose>-410.67098999023438 283.5989990234375 -22.451501846313477 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_30</name>
+      <pose>-383.62298583984375 279.58599853515625 -23.182987213134766 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_31</name>
+      <pose>-442.239013671875 259.15301513671875 -15.812997817993164 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_32</name>
+      <pose>-458.46600341796875 260.572998046875 -19.720569610595703 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_33</name>
+      <pose>-451.25628229005127 234.30857708190348 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_34</name>
+      <pose>-464.35299682617188 242.77799987792969 -22.429782867431641 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_35</name>
+      <pose>-445.13010615234305 218.66408168596914 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_10</name>
+      <pose>-442.21099853515625 230.31199645996094 -22.078893661499023 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_11</name>
+      <pose>-439.57699584960938 241.71600341796875 -23.213977813720703 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_0</name>
+      <pose>-408.81698608398438 388.99899291992188 -22.813821792602539 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_0</name>
+      <pose>-416.95522846396636 344.75369909978656 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_3</name>
+      <pose>-418.79800415039062 316.25601196289062 -2.7644000053405762 0 0 0.66459546955064519</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_9</name>
+      <pose>-421.41000366210938 291.5469970703125 -3.5084102153778076 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_36</name>
+      <pose>-362.30499267578125 310.468994140625 -7.7508673667907715 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_37</name>
+      <pose>-359.19699096679688 338.11700439453125 -13.58936595916748 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_38</name>
+      <pose>-374.54400634765625 321.67599487304688 -13.820550918579102 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_39</name>
+      <pose>-334.7130126953125 287.25399780273438 -6.6764693260192871 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_40</name>
+      <pose>-357.69811289667007 282.85495728701551 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
+      <name>school_1</name>
+      <pose>-333.04098510742188 300.19699096679688 -19.496393203735352 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_10</name>
+      <pose>-339.93099975585938 327.739990234375 -18.72920036315918 0 0 -1.0724276087835749</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_11</name>
+      <pose>-358.718994140625 354.75 -21.825700759887695 0 0 0.47128530691943288</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_12</name>
+      <pose>-470.26699829101562 366.802001953125 0 0 0 -0.55743088034920651</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house_13</name>
+      <pose>-478.60000610351562 335.3590087890625 0 0 0 -1.6579521513560183</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
+      <name>gazebo_0</name>
+      <pose>-368.44000244140625 295.15499877929688 -20.31340217590332 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
+      <name>gazebo_1</name>
+      <pose>-376.92300415039062 266.9849853515625 -17.80781364440918 0 0 0</pose>
     </include>
     <light name='sun' type='directional'>
       <pose>0 0 10 0 0 0</pose>

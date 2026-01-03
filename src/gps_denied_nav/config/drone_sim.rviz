@@ -8,6 +8,7 @@ Panels:
         - /Status1
         - /Path1
         - /Path2
+        - /Path3
       Splitter Ratio: 0.5
     Tree Height: 338
   - Class: rviz_common/Selection
@@ -138,6 +139,34 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /drone/target_path
       Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz_default_plugins/Path
+      Color: 255; 170; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /drone/return_path
+      Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
       Name: Marker
@@ -196,7 +225,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: -1.6399993896484375
+      Angle: -3.075000524520874
       Class: rviz_default_plugins/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -206,11 +235,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 0.20403285324573517
+      Scale: 3.3693971633911133
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
-      X: 289.9332580566406
-      Y: -462.2015380859375
+      X: 5.047815322875977
+      Y: -65.39635467529297
     Saved: ~
 Window Geometry:
   Displays:
@@ -232,5 +261,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1037
-  X: 1920
+  X: 1933
   Y: 32
