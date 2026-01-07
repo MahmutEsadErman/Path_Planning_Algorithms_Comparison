@@ -68,8 +68,8 @@ public:
     cv::Ptr<cv::DescriptorMatcher> matcher;
 
     // Parameters
-    int similarity_threshold;
-    int min_feature_size;
+    int similarity_threshold_;
+    int min_feature_size_;
     cv::Mat K_;
     cv::Mat cam_tf;
     std::string feature_detector;
@@ -93,14 +93,14 @@ public:
 
         this->declare_parameter<std::string>("path_file", "path_90degree_surf.yaml");
         this->declare_parameter<double>("camera_pitch_angle", 90.0);
-        this->declare_parameter<int>("similarity_threshold", 63);
-        this->declare_parameter<int>("min_feature_size", 20);
+        this->declare_parameter<int>("similarity_threshold", 60);
+        this->declare_parameter<int>("min_feature_size", 30);
         this->declare_parameter<double>("yaw_kp", 0.05);
-        this->declare_parameter<double>("velocity", 5);
+        this->declare_parameter<double>("velocity", 5.0);
         this->declare_parameter<bool>("debug", true);
         
-        similarity_threshold = this->get_parameter("similarity_threshold").as_int();
-        min_feature_size = this->get_parameter("min_feature_size").as_int();
+        similarity_threshold_ = this->get_parameter("similarity_threshold").as_int();
+        min_feature_size_ = this->get_parameter("min_feature_size").as_int();
         vel_ = this->get_parameter("velocity").as_double();
         DEBUG = this->get_parameter("debug").as_bool();
 
@@ -310,17 +310,20 @@ public:
 
     void image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
     {   
-        double target_yaw = 0;
         static int match_size_buff[10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
         static int match_buff_sum = 0;
         static int frame_index = 0;
+        // for the first two paths we use a lower threshold to start easier
+        double similarity_threshold = (path_index_ < 2) ? 60 : similarity_threshold_;
         cv::Mat image = cv_bridge::toCvShare(msg, "bgr8")->image;
         cv::Mat gray_image;
         cv::cvtColor(image, gray_image, cv::COLOR_BGR2GRAY);
         std::vector<cv::KeyPoint> kp;
         cv::Mat des;
         std::vector<cv::DMatch> good_matches;
-        static double vel = vel_;
+        double vel = vel_;
+        double target_yaw = 0;
+
         
         if (!returning_) {
             // If the uav is not turning to the starting yaw
@@ -370,11 +373,11 @@ public:
             compare_features(path_data_[path_index_].features.descriptors, des, good_matches);
             
             // Only calculate translation if we have enough good matches
-            if (good_matches.size() >= min_feature_size) {            
+            if (good_matches.size() >= min_feature_size_) {            
                 target_yaw = calculate_t_with_features(path_data_[path_index_].features.keypoints, kp, good_matches);
             } 
             // If we lost the path, first stop then go back to home
-            else if (match_size_buff[9] != -1 && match_buff_sum/10 < min_feature_size){ 
+            else if (match_size_buff[9] != -1 && match_buff_sum/10 < min_feature_size_){ 
                 lost_path_ = true;
                 RCLCPP_INFO(this->get_logger(), "\n---Lost the path. Stopping...---\n");
             }
@@ -416,7 +419,7 @@ public:
             compare_features(path_history_[history_idx].first.descriptors, des, good_matches);
             
             // Only calculate translation if we have enough good matches
-            if (good_matches.size() >= min_feature_size) {            
+            if (good_matches.size() >= min_feature_size_) {            
                 target_yaw = calculate_t_with_features(path_history_[history_idx].first.keypoints, kp, good_matches);
             } 
 
@@ -440,6 +443,11 @@ public:
         }
 
         if (path_index_ > 1) {
+            // If we are at the end of the path, go slowly to stop easily
+            if ((returning_ && path_index_ >= path_history_.size() - 2) ||
+                (!returning_ && path_index_ >= path_data_.size() - 2)) {
+                vel = 1;
+            }
             follow_path(vel, target_yaw);
             if (!lost_path_) {
                 match_buff_sum -= match_size_buff[frame_index];

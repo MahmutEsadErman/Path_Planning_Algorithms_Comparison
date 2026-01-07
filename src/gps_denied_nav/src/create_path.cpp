@@ -52,6 +52,8 @@ public:
 
     // Parameters
     int similarity_threshold;
+    bool debug;
+    double starting_second_;
     
     // Feature matching constants
     static constexpr float RATIO_TEST_THRESHOLD = 0.7f;
@@ -61,7 +63,11 @@ public:
         this->declare_parameter<std::string>("feature_detector", "SURF");
         this->declare_parameter<std::string>("bag_file_path", "path_90degree");
         this->declare_parameter<int>("similarity_threshold", 60);
+        this->declare_parameter<double>("starting_second", 1.0);
+        this->declare_parameter<bool>("debug", false);
         similarity_threshold = this->get_parameter("similarity_threshold").as_int();
+        debug = this->get_parameter("debug").as_bool();
+        starting_second_ = this->get_parameter("starting_second").as_double();
 
         K_received_ = false;
 
@@ -199,6 +205,9 @@ public:
         sensor_msgs::msg::Imu last_valid_imu;
         last_valid_imu.orientation.w = 1.0;
         
+        // Track the first timestamp for relative time calculation
+        int64_t first_timestamp = -1;
+        
         std::shared_ptr<rosbag2_storage::SerializedBagMessage> last_pose_msg = nullptr;
         
         if (!reader_ || !reader_->has_next()) {
@@ -214,6 +223,20 @@ public:
                 frame = FrameData();
                 auto image_msg = deserializeMessage<sensor_msgs::msg::Image>(msg);
 
+                // Get timestamp from the image message header
+                int64_t current_timestamp = rclcpp::Time(image_msg->header.stamp).nanoseconds();
+                
+                // Capture the first timestamp to calculate relative time
+                if (first_timestamp < 0) {
+                    first_timestamp = current_timestamp;
+                }
+                
+                // Skip frames before starting_second_ (relative to bag start)
+                double relative_time = (current_timestamp - first_timestamp) / 1e9;
+                if (relative_time < starting_second_) {
+                    continue;
+                }
+
                 // Convert ROS image to OpenCV Mat
                 cv::Mat current_mat;
                 auto cv_ptr = cv_bridge::toCvCopy(*image_msg, sensor_msgs::image_encodings::BGR8);
@@ -224,6 +247,7 @@ public:
                 cv::Mat des;
                 fe_method->detectAndCompute(current_mat, cv::Mat(), kp, des);
 
+                // if kp size is less than similarity threshold, skip this frame because there are not enough features
                 if (kp.size() < similarity_threshold+10) {
                     continue;
                 }
@@ -268,9 +292,11 @@ public:
                     gyro_x_sum = 0; gyro_y_sum = 0; gyro_z_sum = 0;
                     imu_count = 0;
 
-                    // std::cout << "kp size: " << kp.size() << std::endl;
-                    // cv::imshow("Image", current_mat);
-                    // cv::waitKey(1);
+                    if (debug) {
+                        std::cout << "kp size: " << kp.size() << std::endl;
+                        cv::imshow("Image", current_mat);
+                        cv::waitKey(1);
+                    }
                 }
             }
             else if (msg->topic_name == "/mavros/imu/data") {
@@ -308,13 +334,7 @@ public:
     }
 
     bool compare_features(const cv::Mat& des1 , const cv::Mat& des2)
-    {
-        if (des1.rows < similarity_threshold || des2.rows < similarity_threshold)
-        {
-            // std::cerr << "Warning: No descriptors found or not enough for knnMatch." << std::endl;
-            return false;
-        }
-        
+    {   
         // 2. Feature Matching (FLANN)
         std::vector<std::vector<cv::DMatch>> matches;
         matcher->knnMatch(des1, des2, matches, 2); // k=2 for ratio test

@@ -261,6 +261,48 @@
                     </pbr>
                 </material>
             </visual>
+            <visual name="PineTrees_visual">
+                <geometry>
+                    <mesh>
+                        <uri>meshes/nb_park.dae</uri>
+                        <submesh>
+                            <name>PineTrees</name>
+                            <center>false</center>
+                        </submesh>
+                    </mesh>
+                </geometry>
+                <material>
+                    <diffuse>1.0 1.0 1.0</diffuse>
+                    <specular>1.0 1.0 1.0</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>materials/textures/PineTree.png</albedo_map>
+                            <roughness>1</roughness>
+                        </metal>
+                    </pbr>
+                </material>
+            </visual>
+            <visual name="EvergreenTree_visual">
+                <geometry>
+                    <mesh>
+                        <uri>meshes/nb_park.dae</uri>
+                        <submesh>
+                            <name>Evergreen</name>
+                            <center>false</center>
+                        </submesh>
+                    </mesh>
+                </geometry>
+                <material>
+                    <diffuse>1.0 1.0 1.0</diffuse>
+                    <specular>1.0 1.0 1.0</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>materials/textures/Evergreen.png</albedo_map>
+                            <roughness>1</roughness>
+                        </metal>
+                    </pbr>
+                </material>
+            </visual>
         </link>
         <link name="heightmap">
             <visual name="heightmap_visual">

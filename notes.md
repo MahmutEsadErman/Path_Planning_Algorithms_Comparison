@@ -35,7 +35,7 @@ ros2 bag record -a -o simple_path2
 
 ros2 bag record -o uzun_yol3 /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
 
-ros2 bag record -o path_90degree /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
+ros2 bag record -o yeni_harita /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
 
 
 # Başlangıç noktasını bizim okula ayarladım
@@ -44,14 +44,17 @@ sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --console --out=udp:127
 
 ros2 run gps_denied_nav drone_control
 
-ros2 run gps_denied_nav main --ros-args -p yaw_kp:=0.05 -p pitch_kp:=5.0 -p path_file:=uzun_yol3_SURF.yaml
+ros2 run gps_denied_nav main --ros-args -p yaw_kp:=0.05 -p pitch_kp:=5.0 -p path_file:=yeni_harita_SURF.yaml
 
-ros2 run gps_denied_nav create_path --ros-args -p bag_file_path:=uzun_yol3
+ros2 run gps_denied_nav create_path --ros-args -p bag_file_path:=yeni_harita
 
 
 ros2 run gps_denied_nav drone_control
 
 message SET_GPS_GLOBAL_ORIGIN 0 41.0258025 28.8884930 600000 0
+
+Guided (41.02039580875228, 28.88856993578641) 50.0 frame 3
+
 
 
 

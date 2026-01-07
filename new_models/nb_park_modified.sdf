@@ -100,530 +100,1505 @@
       <pose>0 0 0 0 0 0</pose>
       <self_collide>false</self_collide>
     </model>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/nb_park</uri>
-      <name>nb_park</name>
+    <model name='nb_park'>
+      <static>true</static>
+      <link name='base_link'>
+        <pose>100.3 -1056.8 -27.199999999999999 0 0 0</pose>
+        <collision name='base_collision'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>Road</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name='Road_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>Road</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>0.0599999987 0.0599999987 0.0599999987 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Road_Albedo.png</albedo_map>
+                <normal_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Road_Normal.png</normal_map>
+                <roughness_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Road_Roughness.png</roughness_map>
+                <environment_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/EnvMap.dds</environment_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='Wall_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>Wall</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>0.0599999987 0.0599999987 0.0599999987 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Wall_Albedo.png</albedo_map>
+                <normal_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Wall_Normal.png</normal_map>
+                <roughness_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Wall_Roughness.png</roughness_map>
+                <environment_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/EnvMap.dds</environment_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='Dock_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>Dock</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>0.0599999987 0.0599999987 0.0599999987 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Dock_Albedo.png</albedo_map>
+                <normal_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Dock_Normal.png</normal_map>
+                <roughness_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Dock_Roughness.png</roughness_map>
+                <environment_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/EnvMap.dds</environment_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='Concrete_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>Concrete</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>0.0599999987 0.0599999987 0.0599999987 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Concrete_Albedo.png</albedo_map>
+                <normal_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Concrete_Normal.png</normal_map>
+                <roughness_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Concrete_Roughness.png</roughness_map>
+                <environment_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/EnvMap.dds</environment_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='Railing_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>Railing</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>1 1 1 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Railing_Albedo.png</albedo_map>
+                <metalness_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Railing_Metalness.png</metalness_map>
+                <roughness_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Railing_Roughness.png</roughness_map>
+                <environment_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/EnvMap.dds</environment_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='DoorWindow_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>DoorWindow</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>1 1 1 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/DoorWindow_Albedo.png</albedo_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='Windows_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>Windows</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>1 1 1 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Window_Albedo.png</albedo_map>
+                <normal_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Wall_Normal.png</normal_map>
+                <roughness_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Window_Roughness.png</roughness_map>
+                <environment_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/EnvMap.dds</environment_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='Roof_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>Roof</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>1 1 1 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Roof_Albedo.png</albedo_map>
+                <normal_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Roof_Normal.png</normal_map>
+                <roughness_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Roof_Roughness.png</roughness_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='PalmTree_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>PalmTree</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>1 1 1 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/PalmTree_Albedo.png</albedo_map>
+                <normal_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/PalmTree_Normal.png</normal_map>
+                <roughness>1</roughness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='Asphalt_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>Asphalt</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>0.0599999987 0.0599999987 0.0599999987 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Asphalt_Albedo.png</albedo_map>
+                <normal_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Asphalt_Normal.png</normal_map>
+                <roughness_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Asphalt_Roughness.png</roughness_map>
+                <environment_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/EnvMap.dds</environment_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='Trees_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>Trees</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>1 1 1 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Tree_Albedo.png</albedo_map>
+                <roughness>1</roughness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='PineTrees_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>PineTrees</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>1 1 1 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/PineTree.png</albedo_map>
+                <roughness>1</roughness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name='EvergreenTree_visual'>
+          <geometry>
+            <mesh>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/meshes/nb_park.dae</uri>
+              <submesh>
+                <name>Evergreen</name>
+                <center>false</center>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>1 1 1 1</specular>
+            <pbr>
+              <metal>
+                <albedo_map>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Evergreen.png</albedo_map>
+                <roughness>1</roughness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <inertial>
+          <pose>0 0 0 0 0 0</pose>
+          <mass>1</mass>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+        </inertial>
+        <enable_wind>false</enable_wind>
+      </link>
+      <link name='heightmap'>
+        <visual name='heightmap_visual'>
+          <geometry>
+            <heightmap>
+              <use_terrain_paging>false</use_terrain_paging>
+              <texture>
+                <diffuse>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Sand_Albedo.png</diffuse>
+                <normal>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/flat_normal.png</normal>
+                <size>10</size>
+              </texture>
+              <texture>
+                <diffuse>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Grass_Albedo.jpg</diffuse>
+                <normal>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/flat_normal.png</normal>
+                <size>10</size>
+              </texture>
+              <blend>
+                <min_height>4</min_height>
+                <fade_dist>1</fade_dist>
+              </blend>
+              <uri>file:///ros2_tutorials/new_models/nb_park_modified/materials/textures/Heightmap.png</uri>
+              <size>1724.5 3449 7</size>
+              <pos>100.3 -1056.8 -29.748000000000001</pos>
+            </heightmap>
+          </geometry>
+        </visual>
+        <pose>0 0 0 0 0 0</pose>
+        <inertial>
+          <pose>0 0 0 0 0 0</pose>
+          <mass>1</mass>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+        </inertial>
+        <enable_wind>false</enable_wind>
+      </link>
       <pose>0 0 0 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/my_iris</uri>
-      <name>iris_with_gimbal</name>
-      <pose>-399.99606405463487 469.9981442231159 -22.291228690805472 8.0014423888624336e-09 -3.11593384311595e-10 0.009494366261089026</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house</name>
-      <pose>-433.82598876953125 414.79400634765625 -22.378429412841797 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
-      <name>gazebo</name>
-      <pose>-415.63400268554688 453.57998657226562 -22.222232818603516 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_1</name>
-      <pose>-392.07699584960938 195.00300598144531 -21.622209548950195 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_2</name>
-      <pose>-377.67599487304688 392.99301147460938 -21.731176376342773 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
-      <name>radio_tower</name>
-      <pose>-434.48300170898438 476.18301391601562 -24.286643981933594 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
-      <name>radio_tower_2</name>
-      <pose>-457.36700439453125 122.70999908447266 -21.248849868774414 0 0 0</pose>
-    </include>
+      <self_collide>false</self_collide>
+    </model>
+    <model name='iris_with_gimbal'>
+      <model name='iris_with_standoffs'>
+        <pose>0 0 0 0 0 0</pose>
+        <link name='base_link'>
+          <velocity_decay>
+            <linear>0</linear>
+            <angular>0</angular>
+          </velocity_decay>
+          <inertial>
+            <pose>0 0 0 0 0 0</pose>
+            <mass>1.5</mass>
+            <inertia>
+              <ixx>0.0080000000000000002</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>0.014999999999999999</iyy>
+              <iyz>0</iyz>
+              <izz>0.017000000000000001</izz>
+            </inertia>
+          </inertial>
+          <collision name='base_collision'>
+            <pose>0 0 -0.080000000000000002 0 0 0</pose>
+            <geometry>
+              <box>
+                <size>0.46999999999999997 0.46999999999999997 0.23000000000000001</size>
+              </box>
+            </geometry>
+            <surface>
+              <contact>
+                <ode>
+                  <max_vel>100</max_vel>
+                  <min_depth>0.001</min_depth>
+                </ode>
+              </contact>
+              <friction>
+                <ode>
+                  <mu>100000</mu>
+                  <mu2>100000</mu2>
+                </ode>
+              </friction>
+              <bounce/>
+            </surface>
+          </collision>
+          <visual name='base_visual'>
+            <geometry>
+              <mesh>
+                <uri>model://iris_with_standoffs/meshes/iris.dae</uri>
+              </mesh>
+            </geometry>
+            <material>
+              <ambient>0.0500000007 0.0500000007 0.0500000007 1</ambient>
+              <diffuse>0.0500000007 0.0500000007 0.0500000007 1</diffuse>
+              <specular>1 1 1 1</specular>
+              <pbr>
+                <metal>
+                  <metalness>0.5</metalness>
+                  <roughness>0.5</roughness>
+                </metal>
+              </pbr>
+            </material>
+          </visual>
+          <visual name='front_left_leg_visual'>
+            <pose>0.123 0.22 -0.11 0 0 0</pose>
+            <geometry>
+              <cylinder>
+                <radius>0.0050000000000000001</radius>
+                <length>0.17000000000000001</length>
+              </cylinder>
+            </geometry>
+            <material>
+              <ambient>0.0500000007 0.0500000007 0.0500000007 1</ambient>
+              <diffuse>0.0500000007 0.0500000007 0.0500000007 1</diffuse>
+              <specular>0.00999999978 0.00999999978 0.00999999978 1</specular>
+              <pbr>
+                <metal>
+                  <metalness>0.5</metalness>
+                  <roughness>0.5</roughness>
+                </metal>
+              </pbr>
+            </material>
+          </visual>
+          <visual name='front_right_leg_visual'>
+            <pose>0.123 -0.22 -0.11 0 0 0</pose>
+            <geometry>
+              <cylinder>
+                <radius>0.0050000000000000001</radius>
+                <length>0.17000000000000001</length>
+              </cylinder>
+            </geometry>
+            <material>
+              <ambient>0.0500000007 0.0500000007 0.0500000007 1</ambient>
+              <diffuse>0.0500000007 0.0500000007 0.0500000007 1</diffuse>
+              <specular>0.00999999978 0.00999999978 0.00999999978 1</specular>
+              <pbr>
+                <metal>
+                  <metalness>0.5</metalness>
+                  <roughness>0.5</roughness>
+                </metal>
+              </pbr>
+            </material>
+          </visual>
+          <visual name='rear_left_leg_visual'>
+            <pose>-0.14000000000000001 0.20999999999999999 -0.11 0 0 0</pose>
+            <geometry>
+              <cylinder>
+                <radius>0.0050000000000000001</radius>
+                <length>0.17000000000000001</length>
+              </cylinder>
+            </geometry>
+            <material>
+              <ambient>0.0500000007 0.0500000007 0.0500000007 1</ambient>
+              <diffuse>0.0500000007 0.0500000007 0.0500000007 1</diffuse>
+              <specular>0.00999999978 0.00999999978 0.00999999978 1</specular>
+              <pbr>
+                <metal>
+                  <metalness>0.5</metalness>
+                  <roughness>0.5</roughness>
+                </metal>
+              </pbr>
+            </material>
+          </visual>
+          <visual name='rear_right_leg_visual'>
+            <pose>-0.14000000000000001 -0.20999999999999999 -0.11 0 0 0</pose>
+            <geometry>
+              <cylinder>
+                <radius>0.0050000000000000001</radius>
+                <length>0.17000000000000001</length>
+              </cylinder>
+            </geometry>
+            <material>
+              <ambient>0.0500000007 0.0500000007 0.0500000007 1</ambient>
+              <diffuse>0.0500000007 0.0500000007 0.0500000007 1</diffuse>
+              <specular>0.00999999978 0.00999999978 0.00999999978 1</specular>
+              <pbr>
+                <metal>
+                  <metalness>0.5</metalness>
+                  <roughness>0.5</roughness>
+                </metal>
+              </pbr>
+            </material>
+          </visual>
+        </link>
+        <link name='imu_link'>
+          <inertial>
+            <pose>0 0 0 0 0 0</pose>
+            <mass>0.14999999999999999</mass>
+            <inertia>
+              <ixx>1.0000000000000001e-05</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>2.0000000000000002e-05</iyy>
+              <iyz>0</iyz>
+              <izz>2.0000000000000002e-05</izz>
+            </inertia>
+          </inertial>
+          <sensor name='imu_sensor' type='imu'>
+            <pose degrees='true'>0 0 0   180 0 0</pose>
+            <always_on>true</always_on>
+            <update_rate>1000</update_rate>
+            <imu/>
+          </sensor>
+        </link>
+        <joint name='imu_joint' type='revolute'>
+          <child>imu_link</child>
+          <parent>base_link</parent>
+          <axis>
+            <xyz>0 0 1</xyz>
+            <limit>
+              <lower>0</lower>
+              <upper>0</upper>
+              <effort>0</effort>
+              <velocity>0</velocity>
+            </limit>
+            <dynamics>
+              <damping>1</damping>
+              <spring_reference>0</spring_reference>
+              <spring_stiffness>0</spring_stiffness>
+            </dynamics>
+          </axis>
+        </joint>
+        <link name='rotor_0'>
+          <pose>0.13 -0.22 0.023 0 0 0</pose>
+          <inertial>
+            <pose>0 0 0 0 0 0</pose>
+            <mass>0.025000000000000001</mass>
+            <inertia>
+              <ixx>9.7499999999999998e-06</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>0.00016670399999999999</iyy>
+              <iyz>0</iyz>
+              <izz>0.00016760399999999999</izz>
+            </inertia>
+          </inertial>
+          <collision name='rotor_0_collision'>
+            <pose>0 0 0 0 0 0</pose>
+            <geometry>
+              <cylinder>
+                <length>0.0050000000000000001</length>
+                <radius>0.10000000000000001</radius>
+              </cylinder>
+            </geometry>
+            <surface>
+              <contact>
+                <ode/>
+              </contact>
+              <friction>
+                <ode/>
+              </friction>
+              <bounce/>
+            </surface>
+          </collision>
+          <visual name='rotor_0_visual'>
+            <pose>0 0 0 0 0 0</pose>
+            <geometry>
+              <mesh>
+                <scale>1 1 1</scale>
+                <uri>model://iris_with_standoffs/meshes/iris_prop_ccw.dae</uri>
+              </mesh>
+            </geometry>
+            <material>
+              <ambient>0 0 1 1</ambient>
+              <diffuse>0 0 1 1</diffuse>
+              <specular>1 1 1 1</specular>
+              <pbr>
+                <metal>
+                  <metalness>0.5</metalness>
+                  <roughness>0.5</roughness>
+                </metal>
+              </pbr>
+            </material>
+          </visual>
+          <gravity>true</gravity>
+          <velocity_decay/>
+          <self_collide>false</self_collide>
+        </link>
+        <joint name='rotor_0_joint' type='revolute'>
+          <child>rotor_0</child>
+          <parent>base_link</parent>
+          <axis>
+            <xyz>0 0 1</xyz>
+            <limit>
+              <lower>-10000000000000000</lower>
+              <upper>10000000000000000</upper>
+            </limit>
+            <dynamics>
+              <damping>0.0040000000000000001</damping>
+              <spring_reference>0</spring_reference>
+              <spring_stiffness>0</spring_stiffness>
+            </dynamics>
+          </axis>
+          <physics>
+            <ode>
+              <implicit_spring_damper>true</implicit_spring_damper>
+            </ode>
+          </physics>
+        </joint>
+        <link name='rotor_1'>
+          <pose>-0.13 0.20000000000000001 0.023 0 0 0</pose>
+          <inertial>
+            <pose>0 0 0 0 0 0</pose>
+            <mass>0.025000000000000001</mass>
+            <inertia>
+              <ixx>9.7499999999999998e-06</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>0.00016670399999999999</iyy>
+              <iyz>0</iyz>
+              <izz>0.00016760399999999999</izz>
+            </inertia>
+          </inertial>
+          <collision name='rotor_1_collision'>
+            <pose>0 0 0 0 0 0</pose>
+            <geometry>
+              <cylinder>
+                <length>0.0050000000000000001</length>
+                <radius>0.10000000000000001</radius>
+              </cylinder>
+            </geometry>
+            <surface>
+              <contact>
+                <ode/>
+              </contact>
+              <friction>
+                <ode/>
+              </friction>
+              <bounce/>
+            </surface>
+          </collision>
+          <visual name='rotor_1_visual'>
+            <pose>0 0 0 0 0 0</pose>
+            <geometry>
+              <mesh>
+                <scale>1 1 1</scale>
+                <uri>model://iris_with_standoffs/meshes/iris_prop_ccw.dae</uri>
+              </mesh>
+            </geometry>
+            <material>
+              <ambient>0 0 1 1</ambient>
+              <diffuse>0 0 1 1</diffuse>
+              <specular>1 1 1 1</specular>
+              <pbr>
+                <metal>
+                  <metalness>0.5</metalness>
+                  <roughness>0.5</roughness>
+                </metal>
+              </pbr>
+            </material>
+          </visual>
+          <gravity>true</gravity>
+          <velocity_decay/>
+          <self_collide>false</self_collide>
+        </link>
+        <joint name='rotor_1_joint' type='revolute'>
+          <child>rotor_1</child>
+          <parent>base_link</parent>
+          <axis>
+            <xyz>0 0 1</xyz>
+            <limit>
+              <lower>-10000000000000000</lower>
+              <upper>10000000000000000</upper>
+            </limit>
+            <dynamics>
+              <damping>0.0040000000000000001</damping>
+              <spring_reference>0</spring_reference>
+              <spring_stiffness>0</spring_stiffness>
+            </dynamics>
+          </axis>
+          <physics>
+            <ode>
+              <implicit_spring_damper>true</implicit_spring_damper>
+            </ode>
+          </physics>
+        </joint>
+        <link name='rotor_2'>
+          <pose>0.13 0.22 0.023 0 0 0</pose>
+          <inertial>
+            <pose>0 0 0 0 0 0</pose>
+            <mass>0.025000000000000001</mass>
+            <inertia>
+              <ixx>9.7499999999999998e-06</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>0.00016670399999999999</iyy>
+              <iyz>0</iyz>
+              <izz>0.00016760399999999999</izz>
+            </inertia>
+          </inertial>
+          <collision name='rotor_2_collision'>
+            <pose>0 0 0 0 0 0</pose>
+            <geometry>
+              <cylinder>
+                <length>0.0050000000000000001</length>
+                <radius>0.10000000000000001</radius>
+              </cylinder>
+            </geometry>
+            <surface>
+              <contact>
+                <ode/>
+              </contact>
+              <friction>
+                <ode/>
+              </friction>
+              <bounce/>
+            </surface>
+          </collision>
+          <visual name='rotor_2_visual'>
+            <pose>0 0 0 0 0 0</pose>
+            <geometry>
+              <mesh>
+                <scale>1 1 1</scale>
+                <uri>model://iris_with_standoffs/meshes/iris_prop_cw.dae</uri>
+              </mesh>
+            </geometry>
+            <material>
+              <ambient>0 1 0 1</ambient>
+              <diffuse>0 1 0 1</diffuse>
+              <specular>1 1 1 1</specular>
+              <pbr>
+                <metal>
+                  <metalness>0.5</metalness>
+                  <roughness>0.5</roughness>
+                </metal>
+              </pbr>
+            </material>
+          </visual>
+          <gravity>true</gravity>
+          <velocity_decay/>
+          <self_collide>false</self_collide>
+        </link>
+        <joint name='rotor_2_joint' type='revolute'>
+          <child>rotor_2</child>
+          <parent>base_link</parent>
+          <axis>
+            <xyz>0 0 1</xyz>
+            <limit>
+              <lower>-10000000000000000</lower>
+              <upper>10000000000000000</upper>
+            </limit>
+            <dynamics>
+              <damping>0.0040000000000000001</damping>
+              <spring_reference>0</spring_reference>
+              <spring_stiffness>0</spring_stiffness>
+            </dynamics>
+          </axis>
+          <physics>
+            <ode>
+              <implicit_spring_damper>true</implicit_spring_damper>
+            </ode>
+          </physics>
+        </joint>
+        <link name='rotor_3'>
+          <pose>-0.13 -0.20000000000000001 0.023 0 0 0</pose>
+          <inertial>
+            <pose>0 0 0 0 0 0</pose>
+            <mass>0.025000000000000001</mass>
+            <inertia>
+              <ixx>9.7499999999999998e-06</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>0.00016670399999999999</iyy>
+              <iyz>0</iyz>
+              <izz>0.00016760399999999999</izz>
+            </inertia>
+          </inertial>
+          <collision name='rotor_3_collision'>
+            <pose>0 0 0 0 0 0</pose>
+            <geometry>
+              <cylinder>
+                <length>0.0050000000000000001</length>
+                <radius>0.10000000000000001</radius>
+              </cylinder>
+            </geometry>
+            <surface>
+              <contact>
+                <ode/>
+              </contact>
+              <friction>
+                <ode/>
+              </friction>
+              <bounce/>
+            </surface>
+          </collision>
+          <visual name='rotor_3_visual'>
+            <pose>0 0 0 0 0 0</pose>
+            <geometry>
+              <mesh>
+                <scale>1 1 1</scale>
+                <uri>model://iris_with_standoffs/meshes/iris_prop_cw.dae</uri>
+              </mesh>
+            </geometry>
+            <material>
+              <ambient>0 1 0 1</ambient>
+              <diffuse>0 1 0 1</diffuse>
+              <specular>1 1 1 1</specular>
+              <pbr>
+                <metal>
+                  <metalness>0.5</metalness>
+                  <roughness>0.5</roughness>
+                </metal>
+              </pbr>
+            </material>
+          </visual>
+          <gravity>true</gravity>
+          <velocity_decay/>
+          <self_collide>false</self_collide>
+        </link>
+        <joint name='rotor_3_joint' type='revolute'>
+          <child>rotor_3</child>
+          <parent>base_link</parent>
+          <axis>
+            <xyz>0 0 1</xyz>
+            <limit>
+              <lower>-10000000000000000</lower>
+              <upper>10000000000000000</upper>
+            </limit>
+            <dynamics>
+              <damping>0.0040000000000000001</damping>
+              <spring_reference>0</spring_reference>
+              <spring_stiffness>0</spring_stiffness>
+            </dynamics>
+          </axis>
+          <physics>
+            <ode>
+              <implicit_spring_damper>true</implicit_spring_damper>
+            </ode>
+          </physics>
+        </joint>
+      </model>
+      <model name='gimbal'>
+        <pose degrees='true'>0 -0.01 -0.12492300000000001   89.999999999999986 0 89.999999999999986</pose>
+        <link name='base_link'>
+          <inertial>
+            <mass>0.20000000000000001</mass>
+            <inertia>
+              <ixx>0.0001</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>0.0001</iyy>
+              <iyz>0</iyz>
+              <izz>0.0001</izz>
+            </inertia>
+          </inertial>
+          <visual name='base_visual'>
+            <geometry>
+              <mesh>
+                <uri>model://gimbal_small_3d/meshes/base_plate.dae</uri>
+              </mesh>
+            </geometry>
+            <material>
+              <ambient>0.100000001 0.100000001 0.100000001 1</ambient>
+              <diffuse>0.100000001 0.100000001 0.100000001 1</diffuse>
+              <specular>0.00999999978 0.00999999978 0.00999999978 1</specular>
+            </material>
+          </visual>
+          <collision name='base_collision'>
+            <pose>0.01 0.074999999999999997 -0.025000000000000001 0 0 0</pose>
+            <geometry>
+              <box>
+                <size>0.10000000000000001 0.050000000000000003 0.14999999999999999</size>
+              </box>
+            </geometry>
+            <surface>
+              <friction>
+                <ode/>
+              </friction>
+              <bounce/>
+              <contact/>
+            </surface>
+          </collision>
+        </link>
+        <link name='yaw_link'>
+          <inertial>
+            <mass>0.01</mass>
+            <inertia>
+              <ixx>1.0000000000000001e-05</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>1.0000000000000001e-05</iyy>
+              <iyz>0</iyz>
+              <izz>1.0000000000000001e-05</izz>
+            </inertia>
+          </inertial>
+          <visual name='yaw_visual'>
+            <geometry>
+              <mesh>
+                <uri>model://gimbal_small_3d/meshes/yaw_arm.dae</uri>
+              </mesh>
+            </geometry>
+            <material>
+              <ambient>0.100000001 0.100000001 0.100000001 1</ambient>
+              <diffuse>0.100000001 0.100000001 0.100000001 1</diffuse>
+              <specular>0.00999999978 0.00999999978 0.00999999978 1</specular>
+            </material>
+          </visual>
+        </link>
+        <joint name='yaw_joint' type='revolute'>
+          <parent>base_link</parent>
+          <child>yaw_link</child>
+          <axis>
+            <xyz>0 1 0</xyz>
+            <dynamics>
+              <damping>0.01</damping>
+              <spring_reference>0</spring_reference>
+              <spring_stiffness>0</spring_stiffness>
+            </dynamics>
+            <limit>
+              <lower>-3.1415926000000001</lower>
+              <upper>3.1415926000000001</upper>
+            </limit>
+          </axis>
+          <pose>0.010500000000000001 0.065000000000000002 -0.002 0 0 0</pose>
+        </joint>
+        <link name='roll_link'>
+          <inertial>
+            <mass>0.01</mass>
+            <inertia>
+              <ixx>1.0000000000000001e-05</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>1.0000000000000001e-05</iyy>
+              <iyz>0</iyz>
+              <izz>1.0000000000000001e-05</izz>
+            </inertia>
+          </inertial>
+          <visual name='roll_visual'>
+            <geometry>
+              <mesh>
+                <uri>model://gimbal_small_3d/meshes/roll_arm.dae</uri>
+              </mesh>
+            </geometry>
+            <material>
+              <ambient>0.100000001 0.100000001 0.100000001 1</ambient>
+              <diffuse>0.100000001 0.100000001 0.100000001 1</diffuse>
+              <specular>0.00999999978 0.00999999978 0.00999999978 1</specular>
+            </material>
+          </visual>
+        </link>
+        <joint name='roll_joint' type='revolute'>
+          <parent>yaw_link</parent>
+          <child>roll_link</child>
+          <axis>
+            <xyz>0 0 1</xyz>
+            <dynamics>
+              <damping>0.01</damping>
+              <spring_reference>0</spring_reference>
+              <spring_stiffness>0</spring_stiffness>
+            </dynamics>
+            <limit>
+              <lower>-3.1415926000000001</lower>
+              <upper>3.1415926000000001</upper>
+            </limit>
+          </axis>
+          <pose>0.0099000000000000008 0.002 -0.050000000000000003 0 0 0</pose>
+        </joint>
+        <link name='pitch_link'>
+          <inertial>
+            <mass>0.01</mass>
+            <inertia>
+              <ixx>1.0000000000000001e-05</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>1.0000000000000001e-05</iyy>
+              <iyz>0</iyz>
+              <izz>1.0000000000000001e-05</izz>
+            </inertia>
+          </inertial>
+          <visual name='pitch_visual'>
+            <pose>0 0 0 0 0 0</pose>
+            <geometry>
+              <mesh>
+                <uri>model://gimbal_small_3d/meshes/camera_enclosure.dae</uri>
+              </mesh>
+            </geometry>
+            <material>
+              <ambient>0.400000006 0.400000006 0.400000006 1</ambient>
+              <diffuse>0.400000006 0.400000006 0.400000006 1</diffuse>
+              <specular>0.100000001 0.100000001 0.100000001 1</specular>
+            </material>
+          </visual>
+          <visual name='camera_visual'>
+            <pose>0 0 0.02 0 0 0</pose>
+            <geometry>
+              <cylinder>
+                <radius>0.025000000000000001</radius>
+                <length>0.050000000000000003</length>
+              </cylinder>
+            </geometry>
+            <material>
+              <ambient>0.400000006 0.400000006 0.400000006 1</ambient>
+              <diffuse>0.400000006 0.400000006 0.400000006 1</diffuse>
+              <specular>0.100000001 0.100000001 0.100000001 1</specular>
+            </material>
+          </visual>
+          <collision name='camera_collision'>
+            <pose>0 0 0.02 0 0 0</pose>
+            <geometry>
+              <cylinder>
+                <radius>0.025000000000000001</radius>
+                <length>0.050000000000000003</length>
+              </cylinder>
+            </geometry>
+            <surface>
+              <friction>
+                <ode/>
+              </friction>
+              <bounce/>
+              <contact/>
+            </surface>
+          </collision>
+          <sensor name='camera' type='camera'>
+            <pose>0 0 0 -1.5700000000000207 -1.5700000000009635 0</pose>
+            <camera>
+              <horizontal_fov>1.3959999999999999</horizontal_fov>
+              <image>
+                <width>640</width>
+                <height>480</height>
+              </image>
+              <clip>
+                <near>0.050000000000000003</near>
+                <far>500</far>
+              </clip>
+            </camera>
+            <always_on>true</always_on>
+            <update_rate>30</update_rate>
+            <visualize>true</visualize>
+            <plugin name='CameraZoomPlugin' filename='CameraZoomPlugin'>
+              <max_zoom>125.0</max_zoom>
+              <slew_rate>0.42514285714</slew_rate>
+            </plugin>
+            <plugin name='GstCameraPlugin' filename='GstCameraPlugin'>
+              <udp_host>127.0.0.1</udp_host>
+              <udp_port>5600</udp_port>
+              <use_basic_pipeline>true</use_basic_pipeline>
+              <use_cuda>true</use_cuda>
+            </plugin>
+          </sensor>
+        </link>
+        <joint name='pitch_joint' type='revolute'>
+          <parent>roll_link</parent>
+          <child>pitch_link</child>
+          <axis>
+            <xyz>1 0 0</xyz>
+            <dynamics>
+              <damping>0.01</damping>
+              <spring_reference>0</spring_reference>
+              <spring_stiffness>0</spring_stiffness>
+            </dynamics>
+            <limit>
+              <lower>-3.1415926000000001</lower>
+              <upper>3.1415926000000001</upper>
+            </limit>
+          </axis>
+          <pose>0.044999999999999998 0.0020999999999999999 0.019900000000000001 0 0 0</pose>
+        </joint>
+      </model>
+      <joint name='gimbal_joint' type='revolute'>
+        <parent>iris_with_standoffs::base_link</parent>
+        <child>gimbal::base_link</child>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <limit>
+            <lower>0</lower>
+            <upper>0</upper>
+            <effort>inf</effort>
+            <velocity>inf</velocity>
+            <stiffness>100000000</stiffness>
+            <dissipation>1</dissipation>
+          </limit>
+          <dynamics>
+            <spring_reference>0</spring_reference>
+            <spring_stiffness>0</spring_stiffness>
+            <damping>0</damping>
+            <friction>0</friction>
+          </dynamics>
+        </axis>
+        <pose>0 0 0 0 0 0</pose>
+      </joint>
+      <plugin name='gz::sim::systems::JointStatePublisher' filename='gz-sim-joint-state-publisher-system'/>
+      <plugin name='gz::sim::systems::LiftDrag' filename='gz-sim-lift-drag-system'>
+        <a0>0.3</a0>
+        <alpha_stall>1.4</alpha_stall>
+        <cla>4.2500</cla>
+        <cda>0.10</cda>
+        <cma>0.0</cma>
+        <cla_stall>-0.025</cla_stall>
+        <cda_stall>0.0</cda_stall>
+        <cma_stall>0.0</cma_stall>
+        <area>0.002</area>
+        <air_density>1.2041</air_density>
+        <cp>0.084 0 0</cp>
+        <forward>0 1 0</forward>
+        <upward>0 0 1</upward>
+        <link_name>iris_with_standoffs::rotor_0</link_name>
+      </plugin>
+      <plugin name='gz::sim::systems::LiftDrag' filename='gz-sim-lift-drag-system'>
+        <a0>0.3</a0>
+        <alpha_stall>1.4</alpha_stall>
+        <cla>4.2500</cla>
+        <cda>0.10</cda>
+        <cma>0.0</cma>
+        <cla_stall>-0.025</cla_stall>
+        <cda_stall>0.0</cda_stall>
+        <cma_stall>0.0</cma_stall>
+        <area>0.002</area>
+        <air_density>1.2041</air_density>
+        <cp>-0.084 0 0</cp>
+        <forward>0 -1 0</forward>
+        <upward>0 0 1</upward>
+        <link_name>iris_with_standoffs::rotor_0</link_name>
+      </plugin>
+      <plugin name='gz::sim::systems::LiftDrag' filename='gz-sim-lift-drag-system'>
+        <a0>0.3</a0>
+        <alpha_stall>1.4</alpha_stall>
+        <cla>4.2500</cla>
+        <cda>0.10</cda>
+        <cma>0.0</cma>
+        <cla_stall>-0.025</cla_stall>
+        <cda_stall>0.0</cda_stall>
+        <cma_stall>0.0</cma_stall>
+        <area>0.002</area>
+        <air_density>1.2041</air_density>
+        <cp>0.084 0 0</cp>
+        <forward>0 1 0</forward>
+        <upward>0 0 1</upward>
+        <link_name>iris_with_standoffs::rotor_1</link_name>
+      </plugin>
+      <plugin name='gz::sim::systems::LiftDrag' filename='gz-sim-lift-drag-system'>
+        <a0>0.3</a0>
+        <alpha_stall>1.4</alpha_stall>
+        <cla>4.2500</cla>
+        <cda>0.10</cda>
+        <cma>0.0</cma>
+        <cla_stall>-0.025</cla_stall>
+        <cda_stall>0.0</cda_stall>
+        <cma_stall>0.0</cma_stall>
+        <area>0.002</area>
+        <air_density>1.2041</air_density>
+        <cp>-0.084 0 0</cp>
+        <forward>0 -1 0</forward>
+        <upward>0 0 1</upward>
+        <link_name>iris_with_standoffs::rotor_1</link_name>
+      </plugin>
+      <plugin name='gz::sim::systems::LiftDrag' filename='gz-sim-lift-drag-system'>
+        <a0>0.3</a0>
+        <alpha_stall>1.4</alpha_stall>
+        <cla>4.2500</cla>
+        <cda>0.10</cda>
+        <cma>0.0</cma>
+        <cla_stall>-0.025</cla_stall>
+        <cda_stall>0.0</cda_stall>
+        <cma_stall>0.0</cma_stall>
+        <area>0.002</area>
+        <air_density>1.2041</air_density>
+        <cp>0.084 0 0</cp>
+        <forward>0 -1 0</forward>
+        <upward>0 0 1</upward>
+        <link_name>iris_with_standoffs::rotor_2</link_name>
+      </plugin>
+      <plugin name='gz::sim::systems::LiftDrag' filename='gz-sim-lift-drag-system'>
+        <a0>0.3</a0>
+        <alpha_stall>1.4</alpha_stall>
+        <cla>4.2500</cla>
+        <cda>0.10</cda>
+        <cma>0.0</cma>
+        <cla_stall>-0.025</cla_stall>
+        <cda_stall>0.0</cda_stall>
+        <cma_stall>0.0</cma_stall>
+        <area>0.002</area>
+        <air_density>1.2041</air_density>
+        <cp>-0.084 0 0</cp>
+        <forward>0 1 0</forward>
+        <upward>0 0 1</upward>
+        <link_name>iris_with_standoffs::rotor_2</link_name>
+      </plugin>
+      <plugin name='gz::sim::systems::LiftDrag' filename='gz-sim-lift-drag-system'>
+        <a0>0.3</a0>
+        <alpha_stall>1.4</alpha_stall>
+        <cla>4.2500</cla>
+        <cda>0.10</cda>
+        <cma>0.0</cma>
+        <cla_stall>-0.025</cla_stall>
+        <cda_stall>0.0</cda_stall>
+        <cma_stall>0.0</cma_stall>
+        <area>0.002</area>
+        <air_density>1.2041</air_density>
+        <cp>0.084 0 0</cp>
+        <forward>0 -1 0</forward>
+        <upward>0 0 1</upward>
+        <link_name>iris_with_standoffs::rotor_3</link_name>
+      </plugin>
+      <plugin name='gz::sim::systems::LiftDrag' filename='gz-sim-lift-drag-system'>
+        <a0>0.3</a0>
+        <alpha_stall>1.4</alpha_stall>
+        <cla>4.2500</cla>
+        <cda>0.10</cda>
+        <cma>0.0</cma>
+        <cla_stall>-0.025</cla_stall>
+        <cda_stall>0.0</cda_stall>
+        <cma_stall>0.0</cma_stall>
+        <area>0.002</area>
+        <air_density>1.2041</air_density>
+        <cp>-0.084 0 0</cp>
+        <forward>0 1 0</forward>
+        <upward>0 0 1</upward>
+        <link_name>iris_with_standoffs::rotor_3</link_name>
+      </plugin>
+      <plugin name='gz::sim::systems::ApplyJointForce' filename='gz-sim-apply-joint-force-system'>
+        <joint_name>iris_with_standoffs::rotor_0_joint</joint_name>
+      </plugin>
+      <plugin name='gz::sim::systems::ApplyJointForce' filename='gz-sim-apply-joint-force-system'>
+        <joint_name>iris_with_standoffs::rotor_1_joint</joint_name>
+      </plugin>
+      <plugin name='gz::sim::systems::ApplyJointForce' filename='gz-sim-apply-joint-force-system'>
+        <joint_name>iris_with_standoffs::rotor_2_joint</joint_name>
+      </plugin>
+      <plugin name='gz::sim::systems::ApplyJointForce' filename='gz-sim-apply-joint-force-system'>
+        <joint_name>iris_with_standoffs::rotor_3_joint</joint_name>
+      </plugin>
+      <plugin name='ArduPilotPlugin' filename='ArduPilotPlugin'>
+        <fdm_addr>127.0.0.1</fdm_addr>
+        <fdm_port_in>9002</fdm_port_in>
+        <connectionTimeoutMaxCount>5</connectionTimeoutMaxCount>
+        <lock_step>1</lock_step>
+        <modelXYZToAirplaneXForwardZDown degrees='true'>0 0 0 180 0 0</modelXYZToAirplaneXForwardZDown>
+        <gazeboXYZToNED degrees='true'>0 0 0 180 0 90</gazeboXYZToNED>
+        <imuName>iris_with_standoffs::imu_link::imu_sensor</imuName>
+        <control channel='0'>
+          <jointName>iris_with_standoffs::rotor_0_joint</jointName>
+          <useForce>1</useForce>
+          <multiplier>838</multiplier>
+          <offset>0</offset>
+          <servo_min>1100</servo_min>
+          <servo_max>1900</servo_max>
+          <type>VELOCITY</type>
+          <p_gain>0.20</p_gain>
+          <i_gain>0</i_gain>
+          <d_gain>0</d_gain>
+          <i_max>0</i_max>
+          <i_min>0</i_min>
+          <cmd_max>2.5</cmd_max>
+          <cmd_min>-2.5</cmd_min>
+          <controlVelocitySlowdownSim>1</controlVelocitySlowdownSim>
+        </control>
+        <control channel='1'>
+          <jointName>iris_with_standoffs::rotor_1_joint</jointName>
+          <useForce>1</useForce>
+          <multiplier>838</multiplier>
+          <offset>0</offset>
+          <servo_min>1100</servo_min>
+          <servo_max>1900</servo_max>
+          <type>VELOCITY</type>
+          <p_gain>0.20</p_gain>
+          <i_gain>0</i_gain>
+          <d_gain>0</d_gain>
+          <i_max>0</i_max>
+          <i_min>0</i_min>
+          <cmd_max>2.5</cmd_max>
+          <cmd_min>-2.5</cmd_min>
+          <controlVelocitySlowdownSim>1</controlVelocitySlowdownSim>
+        </control>
+        <control channel='2'>
+          <jointName>iris_with_standoffs::rotor_2_joint</jointName>
+          <useForce>1</useForce>
+          <multiplier>-838</multiplier>
+          <offset>0</offset>
+          <servo_min>1100</servo_min>
+          <servo_max>1900</servo_max>
+          <type>VELOCITY</type>
+          <p_gain>0.20</p_gain>
+          <i_gain>0</i_gain>
+          <d_gain>0</d_gain>
+          <i_max>0</i_max>
+          <i_min>0</i_min>
+          <cmd_max>2.5</cmd_max>
+          <cmd_min>-2.5</cmd_min>
+          <controlVelocitySlowdownSim>1</controlVelocitySlowdownSim>
+        </control>
+        <control channel='3'>
+          <jointName>iris_with_standoffs::rotor_3_joint</jointName>
+          <useForce>1</useForce>
+          <multiplier>-838</multiplier>
+          <offset>0</offset>
+          <servo_min>1100</servo_min>
+          <servo_max>1900</servo_max>
+          <type>VELOCITY</type>
+          <p_gain>0.20</p_gain>
+          <i_gain>0</i_gain>
+          <d_gain>0</d_gain>
+          <i_max>0</i_max>
+          <i_min>0</i_min>
+          <cmd_max>2.5</cmd_max>
+          <cmd_min>-2.5</cmd_min>
+          <controlVelocitySlowdownSim>1</controlVelocitySlowdownSim>
+        </control>
+        <control channel='8'>
+          <jointName>gimbal::roll_joint</jointName>
+          <multiplier>1.047197551196</multiplier>
+          <offset>-0.5</offset>
+          <servo_min>1100</servo_min>
+          <servo_max>1900</servo_max>
+          <type>COMMAND</type>
+          <cmd_topic>/gimbal/cmd_roll</cmd_topic>
+          <p_gain>2</p_gain>
+        </control>
+        <control channel='9'>
+          <jointName>gimbal::pitch_joint</jointName>
+          <multiplier>-3.14159265</multiplier>
+          <offset>-0.75</offset>
+          <servo_min>1100</servo_min>
+          <servo_max>1900</servo_max>
+          <type>COMMAND</type>
+          <cmd_topic>/gimbal/cmd_pitch</cmd_topic>
+          <p_gain>2</p_gain>
+        </control>
+        <control channel='10'>
+          <jointName>gimbal::yaw_joint</jointName>
+          <multiplier>-5.5850536</multiplier>
+          <offset>-0.5</offset>
+          <servo_min>1100</servo_min>
+          <servo_max>1900</servo_max>
+          <type>COMMAND</type>
+          <cmd_topic>/gimbal/cmd_yaw</cmd_topic>
+          <p_gain>2</p_gain>
+        </control>
+      </plugin>
+      <plugin name='gz::sim::systems::JointPositionController' filename='gz-sim-joint-position-controller-system'>
+        <joint_name>gimbal::roll_joint</joint_name>
+        <topic>/gimbal/cmd_roll</topic>
+        <p_gain>2</p_gain>
+      </plugin>
+      <plugin name='gz::sim::systems::JointPositionController' filename='gz-sim-joint-position-controller-system'>
+        <joint_name>gimbal::pitch_joint</joint_name>
+        <topic>/gimbal/cmd_pitch</topic>
+        <p_gain>2</p_gain>
+      </plugin>
+      <plugin name='gz::sim::systems::JointPositionController' filename='gz-sim-joint-position-controller-system'>
+        <joint_name>gimbal::yaw_joint</joint_name>
+        <topic>/gimbal/cmd_yaw</topic>
+        <p_gain>2</p_gain>
+      </plugin>
+      <pose>-394.68820197365625 476.35589603020151 -22.291232167411113 2.5877965050396198e-08 -2.4299553757782272e-08 0.98732604413849234</pose>
+      <static>false</static>
+      <self_collide>false</self_collide>
+    </model>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
       <name>school</name>
-      <pose>-405.29400634765625 425.22799682617188 -22.612766265869141 0 0 2.3852099745761515</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
-      <name>school_0</name>
-      <pose>-406.56979370117188 227.84426879882812 -22.866399765014648 0 0 2.5596599776023861</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/hatchback blue/5</uri>
-      <name>hatchback_blue</name>
-      <pose>-401.89898681640625 503.7659912109375 -22.463174819946289 0 0 -1.4794600138484575</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/hatchback blue/5</uri>
-      <name>hatchback_blue_0</name>
-      <pose>-392.17098999023438 463.32901000976562 -21.225421905517578 0 0 -1.2804200647264197</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree</name>
-      <pose>-426.32901000976562 454.38101196289062 -22.915380477905273 0 0 0</pose>
+      <pose>-367.48599243164062 525.385009765625 -23.811199188232422 0 0 -1.465443631488845</pose>
     </include>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
       <name>post_office</name>
-      <pose>-359.82998657226562 320.76199340820312 -21.671333312988281 0 0 0</pose>
+      <pose>-419.92147827148438 524.6649169921875 -22.473600387573242 0 0 -1.4698599953801785</pose>
     </include>
     <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station</name>
-      <pose>-351.50900268554688 449.30801391601562 -23.021919250488281 0 0 1.9848499766337313</pose>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
+      <name>radio_tower</name>
+      <pose>-496.114013671875 394.77499389648438 -21.956031799316406 0 0 0</pose>
     </include>
     <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
-      <name>school_2</name>
-      <pose>-439.42401123046875 87.90789794921875 -22.021156311035156 0 0 0</pose>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
+      <name>radio_tower_0</name>
+      <pose>-463.99798583984375 178.93800354003906 -20.527732849121094 0 0 0</pose>
     </include>
     <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_2</name>
-      <pose>-447.28399658203125 -28.287099838256836 -21.607700347900391 0 0 0</pose>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
+      <name>radio_tower_1</name>
+      <pose>-456.70401000976562 57.330799102783203 -22.669425964355469 0 0 0</pose>
     </include>
     <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_3</name>
-      <pose>-435.72799682617188 110.93900299072266 -22.583250045776367 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_4</name>
-      <pose>-453.85101318359375 47.675300598144531 -22.004959106445312 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_5</name>
-      <pose>-429.28399658203125 -200.63800048828125 -21.556241989135742 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_0</name>
-      <pose>-431.15347290039062 -8.1914300918579102 -22.545200347900391 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_1</name>
-      <pose>-459.86700439453125 6.3795275688171387 -18.673999786376953 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_2</name>
-      <pose>-438.21878051757812 -35.320899963378906 -22.926399230957031 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_0</name>
-      <pose>-456.306396484375 -8.2398099899291992 -21.042800903320312 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_1</name>
-      <pose>-381.00399780273438 -118.62200164794922 -22.200899124145508 0 0 1.3859251736268487</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_2</name>
-      <pose>-471.04901123046875 -193.90199279785156 -22.803600311279297 0 0 1.4998476300719512</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
-      <name>school_3</name>
-      <pose>-429.39938354492188 -141.32525634765625 -22.139999389648438 0 0 1.3203199903023428</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_6</name>
-      <pose>-408.45901489257812 -200.8070068359375 -23.005100250244141 0 0 -1.0676079336621211</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_3</name>
-      <pose>-405.06399536132812 -220.7412109375 -20.660100936889648 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_4</name>
-      <pose>-379.3665771484375 -171.95399475097656 -20.081899642944336 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_5</name>
-      <pose>-414.10000610351562 -174.81500244140625 -22.316999435424805 0 0 -0.63002946693417938</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_6</name>
-      <pose>-454.5142822265625 -37.649898529052734 -24.843000411987305 0 0 0</pose>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
+      <name>radio_tower_2</name>
+      <pose>-441.16900634765625 -44.586898803710938 -20.427242279052734 0 0 0</pose>
     </include>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
       <name>radio_tower_3</name>
-      <pose>-485.59463500976562 -230.88200378417969 -22.919500350952148 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_7</name>
-      <pose>-418.12200927734375 196.96258544921875 -21.611400604248047 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
-      <name>school_4</name>
-      <pose>-413.73150634765625 -298.22262573242188 -19.17140007019043 0 0 2.4194999971124336</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
-      <name>school_5</name>
-      <pose>-443.59698486328125 -218.91299438476562 -15.753581047058105 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/hatchback/3</uri>
-      <name>hatchback</name>
-      <pose>-423.8909912109375 -181.45799255371094 -18.690000534057617 0 0 1.0544322073139305</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_8</name>
-      <pose>-407.0421142578125 -413.53799438476562 -21.450899124145508 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_9</name>
-      <pose>-411.87298583984375 -275.7969970703125 -20.380075454711914 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_7</name>
-      <pose>-391.05499267578125 -310.12899780273438 -18.270151138305664 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_8</name>
-      <pose>-435.85598754882812 -255.23699951171875 -5.2746953964233398 0 0 0</pose>
+      <pose>-418.27099609375 -173.25 -22.356586456298828 0 0 0</pose>
     </include>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/radio tower/3</uri>
       <name>radio_tower_4</name>
-      <pose>-431.40872192382812 -495.47293090820312 -24.771299362182617 0 0 0.40047798941322732</pose>
+      <pose>-427.73800659179688 -288.98001098632812 -25.629150390625 0 0 0</pose>
     </include>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_3</name>
-      <pose>-374.83456420898438 -535.53350830078125 -20.986400604248047 0 0 -1.0574900615832203</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_4</name>
-      <pose>-413.302001953125 -376.4580078125 -15.116100311279297 0 0 0.71984200677586707</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_5</name>
-      <pose>-373.97622680664062 -186.65800476074219 -10.372599601745605 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_6</name>
-      <pose>-438.90301513671875 -162.90199279785156 -18.673164367675781 0 0 0</pose>
+      <name>fire_station</name>
+      <pose>-359.20657348632812 -235.30912780761719 -22.687299728393555 0 0 -1.2649899446837827</pose>
     </include>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
-      <name>school_6</name>
-      <pose>-371.65301513671875 -325.2919921875 -21.778575897216797 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_9</name>
-      <pose>-359.656005859375 -353.82000732421875 -13.900755882263184 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_10</name>
-      <pose>-360.38299560546875 -387.55300903320312 -8.4529819488525391 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_10</name>
-      <pose>-366.1409912109375 -429.50299072265625 -19.549594879150391 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
-      <name>post_office_11</name>
-      <pose>-378.52200317382812 -143.91000366210938 -17.65570068359375 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_7</name>
-      <pose>-382.32379150390625 -570.46600341796875 -21.033100128173828 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_8</name>
-      <pose>-375.5159912109375 -451.8389892578125 -21.419637680053711 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
-      <name>school_7</name>
-      <pose>-364.12149047851562 484.52572631835938 -21.927099227905273 0 0 -0.9405139747149035</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_11</name>
-      <pose>-417.94854736328125 480.19601440429688 -23.379199981689453 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_12</name>
-      <pose>-415.7349853515625 472.3800048828125 -18.458166122436523 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_13</name>
-      <pose>-371.6929931640625 462.65200805664062 -17.064201354980469 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
-      <name>school_8</name>
-      <pose>-380.16387939453125 52.340255737304688 -21.802783966064453 -0.052398699734743044 0.0060460395824771954 -1.4560200324313053</pose>
+      <name>school_0</name>
+      <pose>-397.55282592773438 104.572998046875 -22.815999984741211 0 0 -2.6389200160857254</pose>
     </include>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_4</name>
-      <pose>-384.61898803710938 93.369003295898438 -22.891265869140625 0 0 -0.77013502802845524</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_14</name>
-      <pose>-393.00299072265625 168.26199340820312 -19.422966003417969 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_15</name>
-      <pose>-403.41400146484375 152.44000244140625 -15.093615531921387 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_16</name>
-      <pose>-444.25 5.4465899467468262 -23.611019134521484 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_17</name>
-      <pose>-449.77499389648438 -53.658298492431641 -11.19293212890625 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_18</name>
-      <pose>-378.7869873046875 -156.08247375488281 -6.8069000244140625 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_19</name>
-      <pose>-413.15301513671875 -334.8179931640625 -12.42994213104248 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_20</name>
-      <pose>-403.15499877929688 -363.04901123046875 -17.369630813598633 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_21</name>
-      <pose>-404.17300415039062 -394.8900146484375 -21.540544509887695 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_22</name>
-      <pose>-401.739013671875 -437.89700317382812 -12.153423309326172 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_23</name>
-      <pose>-382.02700805664062 -476.93600463867188 -15.457744598388672 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_24</name>
-      <pose>-366.80999755859375 -372.92898559570312 -14.361514091491699 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_25</name>
-      <pose>-364.59298706054688 -408.27200317382812 -12.32293701171875 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
-      <name>school_9</name>
-      <pose>-420.66000366210938 -428.96701049804688 -22.237968444824219 0 0 -1.2757899771058507</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_5</name>
-      <pose>-445.71499633789062 296.44601440429688 -21.557989120483398 0 0 0.88071501745540703</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_6</name>
-      <pose>-390.28298950195312 305.64401245117188 -18.829900741577148 0 0 -0.77792770489493579</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_7</name>
-      <pose>-451.60299682617188 340.09100341796875 -19.985467910766602 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_8</name>
-      <pose>-387.94900512695312 335.06201171875 -21.08216667175293 0 0 0.67018196652461892</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_9</name>
-      <pose>-446.77499389648438 358.75799560546875 -21.721399307250977 0 0 -1.427290064630808</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_26</name>
-      <pose>-427.8389892578125 379.30599975585938 -20.278030395507812 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_27</name>
-      <pose>-464.885009765625 314.15701293945312 -19.629575729370117 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_28</name>
-      <pose>-446.83099365234375 320.60501098632812 -23.925205230712891 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_29</name>
-      <pose>-410.67098999023438 283.5989990234375 -22.451501846313477 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_30</name>
-      <pose>-383.62298583984375 279.58599853515625 -23.182987213134766 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_31</name>
-      <pose>-442.239013671875 259.15301513671875 -15.812997817993164 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_32</name>
-      <pose>-458.46600341796875 260.572998046875 -19.720569610595703 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_33</name>
-      <pose>-451.25628229005127 234.30857708190348 0 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_34</name>
-      <pose>-464.35299682617188 242.77799987792969 -22.429782867431641 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_35</name>
-      <pose>-445.13010615234305 218.66408168596914 0 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_10</name>
-      <pose>-442.21099853515625 230.31199645996094 -22.078893661499023 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
-      <name>fire_station_11</name>
-      <pose>-439.57699584960938 241.71600341796875 -23.213977813720703 0 0 0</pose>
+      <name>fire_station_0</name>
+      <pose>-380.66702270507812 155.0078125 -23.694599151611328 0 0 1.8054199731107881</pose>
     </include>
     <include>
       <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
       <name>post_office_0</name>
-      <pose>-408.81698608398438 388.99899291992188 -22.813821792602539 0 0 0</pose>
+      <pose>-440.58700561523438 174.42599487304688 -23.15667724609375 0 0 -1.615460016673993</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_1</name>
+      <pose>-428.04501342773438 190.17399597167969 -22.552089691162109 0 0 -2.256610019556101</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_2</name>
+      <pose>-417.28799438476562 163.85800170898438 -23.059576034545898 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/post office/3</uri>
+      <name>post_office_3</name>
+      <pose>-431.40399169921875 144.33200073242188 -23.027692794799805 0 0 -1.1143599797231849</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree</name>
+      <pose>-383.51300048828125 214.406005859375 -17.443288803100586 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_0</name>
+      <pose>-404.7349853515625 145.11851501464844 -21.961599349975586 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_1</name>
+      <pose>-388.375 137.35899353027344 -23.291610717773438 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_2</name>
+      <pose>-416.95001220703125 120.96199798583984 -22.63890266418457 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/fire station/3</uri>
+      <name>fire_station_1</name>
+      <pose>-393.96539306640625 195.15206909179688 -24.110599517822266 0 0 2.9361899851501327</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_3</name>
+      <pose>-440.38528442382812 153.71000671386719 -22.176799774169922 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_4</name>
+      <pose>-420.89199829101562 247.54899597167969 -21.969211578369141 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_5</name>
+      <pose>-389.2239990234375 247.9739990234375 -21.4488525390625 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_6</name>
+      <pose>-409.17001342773438 211.36399841308594 -18.886032104492188 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree_7</name>
+      <pose>-410.32598876953125 254.22599792480469 -21.045034408569336 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
+      <name>collapsed_house</name>
+      <pose>-379.53500366210938 261.49099731445312 -20.968648910522461 0 0 0</pose>
     </include>
     <include>
       <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
       <name>collapsed_house_0</name>
-      <pose>-416.95522846396636 344.75369909978656 0 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_3</name>
-      <pose>-418.79800415039062 316.25601196289062 -2.7644000053405762 0 0 0.66459546955064519</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_9</name>
-      <pose>-421.41000366210938 291.5469970703125 -3.5084102153778076 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_36</name>
-      <pose>-362.30499267578125 310.468994140625 -7.7508673667907715 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_37</name>
-      <pose>-359.19699096679688 338.11700439453125 -13.58936595916748 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_38</name>
-      <pose>-374.54400634765625 321.67599487304688 -13.820550918579102 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_39</name>
-      <pose>-334.7130126953125 287.25399780273438 -6.6764693260192871 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
-      <name>Oak tree_40</name>
-      <pose>-357.69811289667007 282.85495728701551 0 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///home/ubuntu/.gz/fuel/fuel.gazebosim.org/openrobotics/models/school/3</uri>
-      <name>school_1</name>
-      <pose>-333.04098510742188 300.19699096679688 -19.496393203735352 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_10</name>
-      <pose>-339.93099975585938 327.739990234375 -18.72920036315918 0 0 -1.0724276087835749</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_11</name>
-      <pose>-358.718994140625 354.75 -21.825700759887695 0 0 0.47128530691943288</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_12</name>
-      <pose>-470.26699829101562 366.802001953125 0 0 0 -0.55743088034920651</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Collapsed House</uri>
-      <name>collapsed_house_13</name>
-      <pose>-478.60000610351562 335.3590087890625 0 0 0 -1.6579521513560183</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
-      <name>gazebo_0</name>
-      <pose>-368.44000244140625 295.15499877929688 -20.31340217590332 0 0 0</pose>
-    </include>
-    <include>
-      <uri>file:///ros2_tutorials/new_models/Gazebo - relative paths</uri>
-      <name>gazebo_1</name>
-      <pose>-376.92300415039062 266.9849853515625 -17.80781364440918 0 0 0</pose>
+      <pose>-424.2257080078125 265.44699096679688 -22.95050048828125 0 0 0.8571169829176567</pose>
     </include>
     <light name='sun' type='directional'>
       <pose>0 0 10 0 0 0</pose>
@@ -634,9 +1609,9 @@
       <specular>0.800000012 0.800000012 0.800000012 1</specular>
       <attenuation>
         <range>1000</range>
-        <linear>0.01</linear>
-        <constant>0.90000000000000002</constant>
-        <quadratic>0.001</quadratic>
+        <linear>0.0099999997764825821</linear>
+        <constant>0.89999997615814209</constant>
+        <quadratic>0.0010000000474974513</quadratic>
       </attenuation>
       <spot>
         <inner_angle>0</inner_angle>
