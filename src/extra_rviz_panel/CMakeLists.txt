@@ -82,6 +82,25 @@ install(TARGETS path_visualizer
         DESTINATION lib/${PROJECT_NAME}
 )
 
+# Path Plotter Node (Qt-based 2D plot visualization)
+add_executable(path_plotter src/path_plotter.cpp)
+set_target_properties(path_plotter PROPERTIES AUTOMOC ON)
+target_link_libraries(path_plotter Qt5::Widgets)
+ament_target_dependencies(path_plotter
+  rclcpp
+  geometry_msgs
+  nav_msgs
+)
+install(TARGETS path_plotter
+        DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install Python scripts
+install(PROGRAMS
+  scripts/path_plotter.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 ament_export_include_directories(include)
 ament_export_targets(export_rviz_panel)
 pluginlib_export_plugin_description_file(rviz_common rviz_common_plugins.xml)

@@ -33,7 +33,7 @@ echo 'export GZ_SIM_RESOURCE_PATH=/ros2_tutorials/new_models:${GZ_SIM_RESOURCE_P
 
 ros2 bag record -a -o simple_path2
 
-ros2 bag record -o uzun_yol3 /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
+ros2 bag record -o uzun_yol /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
 
 ros2 bag record -o yeni_harita /camera/image /camera/camera_info /simulation_pose_info /mavros/imu/data /mavros/global_position/rel_alt
 
