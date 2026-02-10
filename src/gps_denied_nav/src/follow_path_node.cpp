@@ -34,6 +34,7 @@ FollowPathNode::FollowPathNode() : Node("follow_path_node")
     vel_ = this->get_parameter("velocity").as_double();
     camera_pitch_angle_ = this->get_parameter("camera_pitch_angle").as_double();
     path_file_ = this->get_parameter("path_file").as_string();
+    yaw_kp_ = this->get_parameter("yaw_kp").as_double();
     DEBUG_ = this->get_parameter("debug").as_bool();
 
     // Create marker publisher
@@ -205,11 +206,11 @@ void FollowPathNode::alignToTarget(const cv::Mat& target_descriptors,
     double relative_yaw = 0.0;
 
     if (matches.size() >= static_cast<size_t>(min_feature_count_)) {
-        double raw_relative_yaw = feature_processor_->calculateRelativeYaw(
+        double raw_relative_yaw = feature_processor_->calculateRelativeRotation(
             target_keypoints, current_keypoints, matches);
 
         relative_yaw = filterYaw(raw_relative_yaw);
-        target_yaw = drone_yaw_ + relative_yaw;
+        target_yaw = drone_yaw_ + relative_yaw*yaw_kp_;
 
         if (DEBUG_) {
             RCLCPP_INFO(this->get_logger(), "Aligning - Raw: %.2f rad, Filtered: %.2f rad (%.1f deg), Drone yaw: %.2f",
@@ -242,7 +243,6 @@ void FollowPathNode::alignToTarget(const cv::Mat& target_descriptors,
 
 void FollowPathNode::followPath(double vel, double target_yaw)
 {
-    double yaw_kp = this->get_parameter("yaw_kp").as_double();
     double vel_x = vel;
     double vel_y = 0;
     double vel_z = 0;
@@ -253,7 +253,7 @@ void FollowPathNode::followPath(double vel, double target_yaw)
                     drone_yaw_, target_yaw);
     }
 
-    target_yaw = yaw_kp * target_yaw + drone_yaw_;
+    target_yaw = yaw_kp_ * target_yaw + drone_yaw_;
 
     // Rotate body-frame velocity to global ENU
     double cos_yaw = std::cos(drone_yaw_);
@@ -310,13 +310,16 @@ double FollowPathNode::filterYaw(double raw_yaw)
         return filtered_yaw_;
     }
 
-    double diff = std::abs(raw_yaw - filtered_yaw_);
+    // Use angular difference that properly handles ±π wraparound
+    double angular_diff = std::atan2(std::sin(raw_yaw - filtered_yaw_),
+                                     std::cos(raw_yaw - filtered_yaw_));
+    double abs_diff = std::abs(angular_diff);
 
-    if (diff > 1.5) {  // ~86 degrees tolerance
+    if (abs_diff > 1.5) {  // ~86 degrees tolerance
         outlier_count_++;
         if (DEBUG_) {
-            RCLCPP_WARN(this->get_logger(), "Outlier rejected: %.2f rad (diff: %.2f, count: %d)",
-                        raw_yaw, diff, outlier_count_);
+            RCLCPP_WARN(this->get_logger(), "Outlier rejected: %.2f rad (angular_diff: %.2f, count: %d)",
+                        raw_yaw, angular_diff, outlier_count_);
         }
 
         if (outlier_count_ > 10) {
@@ -329,9 +332,13 @@ double FollowPathNode::filterYaw(double raw_yaw)
 
     outlier_count_ = 0;
 
-    // Exponential Moving Average
+    // Circular Exponential Moving Average
+    // Instead of linear interpolation, add weighted angular difference
     double alpha = 0.4;
-    filtered_yaw_ = alpha * raw_yaw + (1.0 - alpha) * filtered_yaw_;
+    filtered_yaw_ = filtered_yaw_ + alpha * angular_diff;
+
+    // Normalize to [-π, π]
+    filtered_yaw_ = std::atan2(std::sin(filtered_yaw_), std::cos(filtered_yaw_));
 
     return filtered_yaw_;
 }

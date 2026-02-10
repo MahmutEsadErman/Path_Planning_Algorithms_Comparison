@@ -127,6 +127,7 @@ private:
     int min_feature_count_;
     double camera_pitch_angle_;
     double vel_;
+    double yaw_kp_;
     std::string feature_detector_;
 
     // Feature processor

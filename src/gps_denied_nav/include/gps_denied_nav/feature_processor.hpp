@@ -51,15 +51,30 @@ public:
                          float ratio_threshold = 0.75f);
 
     /**
-     * @brief Calculate relative yaw angle from feature matches
+     * @brief Calculate relative yaw angle from feature matches (translation direction)
      * @param kp1 Keypoints from first image
      * @param kp2 Keypoints from second image
      * @param good_matches Matched features
      * @return Target yaw angle in radians
+     * @note Use for path following (translating drone). For alignment (rotating drone),
+     *       use calculateRelativeRotation() instead.
      */
     double calculateRelativeYaw(const std::vector<cv::KeyPoint>& kp1,
                                 const std::vector<cv::KeyPoint>& kp2,
                                 const std::vector<cv::DMatch>& good_matches);
+
+    /**
+     * @brief Calculate rotational difference between two views (for alignment)
+     * @param kp1 Keypoints from target image
+     * @param kp2 Keypoints from current image
+     * @param good_matches Matched features
+     * @return Rotation angle in radians (positive = need to turn CCW)
+     * @note Uses similarity transform estimation. Designed for downward camera
+     *       when the drone is rotating in place to align heading.
+     */
+    double calculateRelativeRotation(const std::vector<cv::KeyPoint>& kp1,
+                                     const std::vector<cv::KeyPoint>& kp2,
+                                     const std::vector<cv::DMatch>& good_matches);
 
 private:
     cv::Ptr<cv::Feature2D> fe_method_;

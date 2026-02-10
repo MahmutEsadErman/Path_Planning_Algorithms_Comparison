@@ -43,6 +43,14 @@ add_executable(create_path src/create_path.cpp)
 ament_target_dependencies(create_path rclcpp std_msgs sensor_msgs cv_bridge image_transport ament_index_cpp mavros_msgs geometry_msgs rosbag2_cpp rosbag2_storage rosbag2_transport)
 target_link_libraries(create_path ${OpenCV_LIBS})
 
+add_executable(test_yaw_methods src/test_yaw_methods.cpp)
+ament_target_dependencies(test_yaw_methods rclcpp std_msgs sensor_msgs cv_bridge ament_index_cpp)
+target_link_libraries(test_yaw_methods ${OpenCV_LIBS})
+
+add_executable(test_feature_detectors src/test_feature_detectors.cpp)
+ament_target_dependencies(test_feature_detectors rclcpp std_msgs sensor_msgs cv_bridge ament_index_cpp geometry_msgs rosbag2_cpp rosbag2_storage rosbag2_transport)
+target_link_libraries(test_feature_detectors ${OpenCV_LIBS})
+
 # drone_control is commented out - source files moved to drone_control_(unused)
 # add_executable(drone_control 
 #   src/drone_control/drone_controller_node.cpp
@@ -52,6 +60,8 @@ target_link_libraries(create_path ${OpenCV_LIBS})
 install(TARGETS
   main
   create_path
+  test_yaw_methods
+  test_feature_detectors
   DESTINATION lib/${PROJECT_NAME}
 )
 
