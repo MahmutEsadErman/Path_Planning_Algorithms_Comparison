@@ -289,6 +289,19 @@ public:
                 auto cv_ptr = cv_bridge::toCvCopy(*image_msg, sensor_msgs::image_encodings::BGR8);
                 current_mat = cv_ptr->image;
 
+                // Stabilize (derotate) image using latest IMU orientation if possible
+                // {
+                //     geometry_msgs::msg::Quaternion q = last_valid_imu.orientation;
+                //     if (imu_count > 0) {
+                //         q = last_orientation;
+                //     }
+
+                //     cv::Mat stabilized;
+                //     if (stabilizeImage(current_mat, q, stabilized)) {
+                //         current_mat = stabilized;
+                //     }
+                // }
+
                 // 1. Feature Detection and Description
                 std::vector<cv::KeyPoint> kp;
                 cv::Mat des;
@@ -431,6 +444,88 @@ public:
             return false;
         }
 
+        return true;
+    }
+
+    bool compute_rpy_from_quaternion(const geometry_msgs::msg::Quaternion& q,
+                                     double& roll, double& pitch, double& yaw)
+    {
+        double x = q.x;
+        double y = q.y;
+        double z = q.z;
+        double w = q.w;
+        double norm = std::sqrt(x*x + y*y + z*z + w*w);
+        if (norm < 1e-6) {
+            roll = 0.0;
+            pitch = 0.0;
+            yaw = 0.0;
+            return false;
+        }
+        x /= norm;
+        y /= norm;
+        z /= norm;
+        w /= norm;
+
+        double sinr_cosp = 2.0 * (w * x + y * z);
+        double cosr_cosp = 1.0 - 2.0 * (x * x + y * y);
+        roll = std::atan2(sinr_cosp, cosr_cosp);
+
+        double sinp = 2.0 * (w * y - z * x);
+        if (std::abs(sinp) >= 1.0) {
+            pitch = std::copysign(M_PI / 2.0, sinp);
+        } else {
+            pitch = std::asin(sinp);
+        }
+
+        double siny_cosp = 2.0 * (w * z + x * y);
+        double cosy_cosp = 1.0 - 2.0 * (y * y + z * z);
+        yaw = std::atan2(siny_cosp, cosy_cosp);
+
+        return true;
+    }
+
+    cv::Mat rpy_to_rotation(double roll, double pitch, double yaw)
+    {
+        double cr = std::cos(roll);
+        double sr = std::sin(roll);
+        double cp = std::cos(pitch);
+        double sp = std::sin(pitch);
+        double cy = std::cos(yaw);
+        double sy = std::sin(yaw);
+
+        cv::Mat R = (cv::Mat_<double>(3, 3) <<
+            cy * cp, cy * sp * sr - sy * cr, cy * sp * cr + sy * sr,
+            sy * cp, sy * sp * sr + cy * cr, sy * sp * cr - cy * sr,
+            -sp,     cp * sr,                cp * cr
+        );
+        return R;
+    }
+
+    bool stabilizeImage(const cv::Mat& input,
+                        const geometry_msgs::msg::Quaternion& q,
+                        cv::Mat& output)
+    {
+        if (!K_received_ || input.empty()) {
+            return false;
+        }
+
+        double roll = 0.0;
+        double pitch = 0.0;
+        double yaw = 0.0;
+        if (!compute_rpy_from_quaternion(q, roll, pitch, yaw)) {
+            return false;
+        }
+
+        // Remove roll/pitch, keep yaw
+        cv::Mat R_current = rpy_to_rotation(roll, pitch, yaw);
+        cv::Mat R_level = rpy_to_rotation(0.0, 0.0, yaw);
+        cv::Mat R = R_level * R_current.t();
+
+        cv::Mat K_inv = K_.inv();
+        cv::Mat H = K_ * R * K_inv;
+
+        cv::warpPerspective(input, output, H, input.size(),
+                            cv::INTER_LINEAR, cv::BORDER_REPLICATE);
         return true;
     }
 

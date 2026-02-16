@@ -1,33 +1,20 @@
 from pymavlink import mavutil
-import time
 
-# Connection string for SITL (default UDP port)
-connection_string = 'udp:127.0.0.1:14550'
-
-# Create the connection
-print(f"Connecting to vehicle on: {connection_string}")
-master = mavutil.mavlink_connection(connection_string)
-
-# Wait for the heartbeat to confirm connection
-print("Waiting for heartbeat...")
+master = mavutil.mavlink_connection('udp:127.0.0.1:14550')
 master.wait_heartbeat()
-print(f"Heartbeat from system (system {master.target_system} component {master.target_component})")
 
-# Prepare message parameters
-# C++: packet.latitude = 41.0258025 * 1e7;
-lat = 410258025
-lon = 288884930
-alt = 600000
-target_system = 0
-
-# Create the SET_GPS_GLOBAL_ORIGIN message
-# The encode function creates the message object
-
-master.mav.set_gps_global_origin_send(
-    target_system,
-    lat,
-    lon,
-    alt
+# Gimbal'ı Earth Frame modunda -90° pitch'e ayarla
+master.mav.command_long_send(
+    master.target_system,
+    master.target_component,
+    mavutil.mavlink.MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW,
+    0,
+    -90,    # pitch (derece) - yere bakıyor
+    0,      # yaw (derece)
+    0,      # pitch rate (deg/s) - 0 = angle control
+    0,      # yaw rate
+    0x02,   # flags: 0x02 = GIMBAL_MANAGER_FLAGS_ROLL_LOCK (stabilize roll)
+    0,
+    mavutil.mavlink.GIMBAL_DEVICE_FLAGS_ROLL_LOCK | 
+    mavutil.mavlink.GIMBAL_DEVICE_FLAGS_PITCH_LOCK  # Earth frame stabilizasyon
 )
-print("Sent SET_GPS_GLOBAL_ORIGIN")
-

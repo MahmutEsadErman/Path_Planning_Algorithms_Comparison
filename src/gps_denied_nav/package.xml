@@ -19,6 +19,7 @@
   <depend>visualization_msgs</depend>
   <depend>std_srvs</depend>
   <depend>mavros_msgs</depend>
+  <exec_depend>rclpy</exec_depend>
 
   <!-- Runtime dependencies for launch files -->
   <exec_depend>launch</exec_depend>

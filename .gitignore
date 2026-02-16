@@ -11,3 +11,4 @@ terrain
 eeprom.bin
 mav.*
 logs
+*__pycache__/

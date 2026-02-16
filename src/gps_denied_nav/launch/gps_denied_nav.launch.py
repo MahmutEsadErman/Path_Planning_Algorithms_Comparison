@@ -1,6 +1,6 @@
-import os
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, ExecuteProcess, TimerAction
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource, AnyLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -8,13 +8,12 @@ from launch_ros.substitutions import FindPackageShare
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import PythonExpression
 
-import math
-
 def generate_launch_description():
     # Declare launch arguments
     pkg_name = LaunchConfiguration('pkg_name')
     world_name = LaunchConfiguration('world_name')
     gimbal_pitch = LaunchConfiguration('gimbal_pitch')
+    gimbal_mode = LaunchConfiguration('gimbal_mode')
     
     pkg_name_arg = DeclareLaunchArgument(
         'pkg_name',
@@ -30,8 +29,14 @@ def generate_launch_description():
 
     gimbal_pitch_arg = DeclareLaunchArgument(
         'gimbal_pitch',
-        default_value='60.0',
+        default_value='90.0',
         description='The pitch angle of the gimbal in degrees.'
+    )
+
+    gimbal_mode_arg = DeclareLaunchArgument(
+        'gimbal_mode',
+        default_value='stabilized',
+        description='Gimbal mode: "static" for fixed pitch or "stabilized" to run gimbal_leveler.py.'
     )
 
     # Launch Gazebo with the iris_runway world
@@ -85,8 +90,10 @@ def generate_launch_description():
             # Keyboard control input
             '/keyboard/keypress@std_msgs/msg/Int32[gz.msgs.Int32',
             
-            # Gimbal control commands - Pitch
+            # Gimbal control commands
             '/gimbal/cmd_pitch@std_msgs/msg/Float64]gz.msgs.Double',
+            '/gimbal/cmd_roll@std_msgs/msg/Float64]gz.msgs.Double',
+            '/gimbal/cmd_yaw@std_msgs/msg/Float64]gz.msgs.Double',
         ],
         remappings=[
             # Remap Gazebo topics to cleaner ROS topic names
@@ -143,6 +150,14 @@ def generate_launch_description():
             ['{data: ', gimbal_pitch_radians, '}'],
             '--once'
         ],
+        condition=IfCondition(PythonExpression(["'", gimbal_mode, "' == 'static'"])),
+        output='screen'
+    )
+
+    gimbal_leveler = Node(
+        package='gps_denied_nav',
+        executable='gimbal_leveler.py',
+        condition=IfCondition(PythonExpression(["'", gimbal_mode, "' == 'stabilized'"])),
         output='screen'
     )
     
@@ -150,6 +165,7 @@ def generate_launch_description():
         pkg_name_arg,
         world_name_arg,
         gimbal_pitch_arg,
+        gimbal_mode_arg,
         gz_sim,
         mavros,
         ros_gz_bridge,
@@ -158,7 +174,8 @@ def generate_launch_description():
         TimerAction(
             period=3.0,
             actions=[
-                set_gimbal_pitch, 
+                set_gimbal_pitch,
+                gimbal_leveler,
                 rviz_visualizer
             ]
         )

@@ -44,10 +44,6 @@ void FeatureProcessor::compareFeatures(const cv::Mat& des1,
                                         std::vector<cv::DMatch>& good_matches,
                                         float ratio_threshold)
 {
-    if (des1.rows < 2 || des2.rows < 2) {
-        return;
-    }
-
     // Feature Matching (FLANN) with k=2 for ratio test
     std::vector<std::vector<cv::DMatch>> matches;
     matcher_->knnMatch(des1, des2, matches, 2);
