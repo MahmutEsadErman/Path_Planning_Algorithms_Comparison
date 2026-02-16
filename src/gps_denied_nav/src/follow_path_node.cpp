@@ -220,6 +220,9 @@ void FollowPathNode::alignToTarget(const cv::Mat& target_descriptors,
             RCLCPP_WARN(this->get_logger(), "Not enough matches for alignment: %zu < %d",
                         matches.size(), min_feature_count_);
         }
+        // Not enough matches to compute a reliable yaw — hold current heading and wait
+        yawPublish(drone_yaw_);
+        return;
     }
 
     yawPublish(target_yaw);
