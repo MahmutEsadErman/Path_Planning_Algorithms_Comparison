@@ -22,11 +22,11 @@ public:
      * @brief Constructor
      * @param feature_detector Type of feature detector: "ORB", "SURF", or "SIFT"
      * @param camera_matrix Camera intrinsic matrix K
-     * @param camera_transform Transform from camera to body frame
+     * @param camera_pitch_angle Camera pitch angle in degrees
      */
     FeatureProcessor(const std::string& feature_detector, 
                      const cv::Mat& camera_matrix,
-                     const cv::Mat& camera_transform);
+                     const double camera_pitch_angle);
 
     /**
      * @brief Detect and compute features from a grayscale image
@@ -66,6 +66,7 @@ private:
     cv::Ptr<cv::DescriptorMatcher> matcher_;
     cv::Mat K_;
     cv::Mat cam_tf_;
+    double camera_pitch_angle_;
 };
 
 }  // namespace gps_denied_nav

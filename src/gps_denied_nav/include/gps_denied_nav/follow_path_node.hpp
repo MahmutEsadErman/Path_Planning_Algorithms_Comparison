@@ -9,6 +9,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/float64.hpp>
 #include <std_msgs/msg/bool.hpp>
+#include <std_msgs/msg/string.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <geometry_msgs/msg/pose.hpp>
@@ -25,8 +26,45 @@
 #include <chrono>
 #include <deque>
 #include <memory>
+#include <fstream>
+#include <numeric>
+#include <sstream>
+#include <iomanip>
 
 namespace gps_denied_nav {
+
+/**
+ * @brief Per-frame timing measurements in milliseconds
+ */
+struct FrameTiming {
+    double feature_extraction_ms = 0.0;
+    double feature_matching_ms = 0.0;
+    double yaw_estimation_ms = 0.0;
+    double yaw_filtering_ms = 0.0;
+    double total_frame_ms = 0.0;
+};
+
+/**
+ * @brief Per-frame metrics snapshot for flight report
+ */
+struct FrameMetrics {
+    // Position (ground truth)
+    double gt_x = 0.0;
+    double gt_y = 0.0;
+
+    // Orientation
+    double drone_yaw = 0.0;
+
+    // Path state
+    int path_index = 0;
+    bool is_returning = false;
+
+    // Feature matching
+    int good_match_count = 0;
+
+    // Timing
+    FrameTiming timing;
+};
 
 /**
  * @brief ROS2 Node for GPS-denied visual path following
@@ -50,7 +88,10 @@ private:
                        const std::vector<cv::KeyPoint>& current_keypoints,
                        bool is_initial_alignment = false);
     void followPath(double vel, double target_yaw);
-    int searchForwardPath(const cv::Mat& current_descriptors, int start_index);
+    int getTraversalPointCount() const;
+    const geometry_msgs::msg::Pose* getTraversalPose(int traversal_index) const;
+    double computeUpcomingTurnAngle() const;
+    double computeTurnSpeedScale(double turn_angle_rad) const;
 
     // ========== Velocity Publishing Functions ==========
     void velPublish(geometry_msgs::msg::Twist vel, double yaw);
@@ -59,7 +100,13 @@ private:
     // ========== Utility Functions ==========
     void loadPath(const std::string& filename);
     void publishLastPointMarker();
-    double calculateError();
+
+    // ========== Flight Report Functions ==========
+    void generateFlightReport();
+
+    // ========== Yaw PID Functions ==========
+    double runYawPid(double yaw_error);
+    void resetYawPid();
     
     // ========== Yaw Filter Functions ==========
     double filterYaw(double raw_yaw);
@@ -90,13 +137,6 @@ private:
     double fps_sum_ = 0.0;
     bool first_frame_ = true;
 
-    // Error calculation
-    double error_sum_ = 0.0;
-    int error_count_ = 0;
-    double error_calc_m_ = 0.0;
-    double error_calc_payda_ = 1.0;
-    bool error_calc_initialized_ = false;
-
     // Match buffer
     int match_size_buff_[10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
     int match_buff_sum_ = 0;
@@ -106,14 +146,21 @@ private:
     double distance_to_endpoint_ = -1.0;
     bool path_completed_ = false;
 
+    // Per-frame metrics data (for flight report)
+    std::vector<FrameMetrics> metrics_data_;
+    std::string report_output_file_ = "flight_report.csv";
+    int path_loss_count_ = 0;
+
     // Yaw filter (EMA-based)
     bool filter_initialized_ = false;
     double filtered_yaw_ = 0.0;
     int outlier_count_ = 0;
 
-    // Forward search
-    int forward_search_attempts_ = 0;
-    int max_forward_search_range_ = 15;
+    // Yaw PID state
+    bool yaw_pid_initialized_ = false;
+    double yaw_integral_ = 0.0;
+    double prev_yaw_error_ = 0.0;
+    std::chrono::time_point<std::chrono::steady_clock> last_yaw_pid_time_;
 
     // Flags
     bool DEBUG_;
@@ -128,6 +175,15 @@ private:
     double camera_pitch_angle_;
     double vel_;
     std::string feature_detector_;
+    double yaw_kp_ = 0.05;
+    double yaw_ki_ = 0.0;
+    double yaw_kd_ = 0.0;
+    double yaw_integral_limit_ = 0.8;
+    double yaw_output_limit_ = 0.6;
+    bool turn_slowdown_enabled_ = true;
+    double turn_slowdown_start_rad_ = 0.349066;  // 20 deg
+    double turn_slowdown_full_rad_ = 1.22173;    // 70 deg
+    double turn_slowdown_min_ratio_ = 0.35;
 
     // Feature processor
     std::unique_ptr<FeatureProcessor> feature_processor_;

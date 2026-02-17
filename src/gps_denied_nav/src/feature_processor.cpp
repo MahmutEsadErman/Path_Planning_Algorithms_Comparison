@@ -10,8 +10,8 @@ namespace gps_denied_nav {
 
 FeatureProcessor::FeatureProcessor(const std::string& feature_detector,
                                    const cv::Mat& camera_matrix,
-                                   const cv::Mat& camera_transform)
-    : K_(camera_matrix.clone()), cam_tf_(camera_transform.clone())
+                                   const double camera_pitch_angle)
+    : K_(camera_matrix.clone()), camera_pitch_angle_(camera_pitch_angle)
 {
     // Initialize feature detector and matcher based on detector type
     if (feature_detector == "ORB") {
@@ -30,6 +30,23 @@ FeatureProcessor::FeatureProcessor(const std::string& feature_detector,
         matcher_ = cv::makePtr<cv::FlannBasedMatcher>(
             cv::makePtr<cv::flann::KDTreeIndexParams>(5));
     }
+
+    // Calculate camera transform matrix
+    // Step 1: Define C_Cros_Ccv (OpenCV Cam to ROS-style Cam)
+    cv::Mat C_Cros_Ccv = (cv::Mat_<double>(3, 3) <<
+         0,  0,  1,   // ROS X = CV Z
+        -1,  0,  0,   // ROS Y = -CV X
+         0, -1,  0);  // ROS Z = -CV Y
+
+    // Step 2: Define C_B_Cros (ROS-style Cam to Drone Body)
+    double angle_rad = camera_pitch_angle_ * M_PI / 180.0;
+    cv::Mat C_B_Cros = (cv::Mat_<double>(3, 3) <<
+        cos(angle_rad), 0, sin(angle_rad),
+                     0, 1,              0,
+       -sin(angle_rad), 0, cos(angle_rad));
+
+    // Step 3: Combine them to get C_B_Ccv (OpenCV Cam to Drone Body)
+    cam_tf_ = C_B_Cros * C_Cros_Ccv;
 }
 
 void FeatureProcessor::detectAndCompute(const cv::Mat& gray_image,

@@ -129,18 +129,6 @@ class GazeboGimbalLeveler(Node):
         if self.publish_yaw:
             self.yaw_pub.publish(Float64(data=self.fixed_yaw_rad))
 
-        now = self.get_clock().now()
-        if (now - self.last_log_time).nanoseconds * 1e-9 >= self.log_interval_sec:
-            self.last_log_time = now
-            self.get_logger().info(
-                "gz roll={:.2f}deg pitch={:.2f}deg | cmd roll={:.2f}deg pitch={:.2f}deg".format(
-                    math.degrees(self.latest_roll),
-                    math.degrees(self.latest_pitch),
-                    math.degrees(roll_cmd),
-                    math.degrees(pitch_cmd),
-                )
-            )
-
     @staticmethod
     def wrap_to_pi(angle: float) -> float:
         return (angle + math.pi) % (2.0 * math.pi) - math.pi

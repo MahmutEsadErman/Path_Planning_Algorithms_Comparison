@@ -35,6 +35,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_executable(main 
   src/main.cpp
   src/follow_path_node.cpp
+  src/path_following.cpp
+  src/yaw_controller.cpp
+  src/flight_report.cpp
   src/feature_processor.cpp)
 ament_target_dependencies(main rclcpp std_msgs sensor_msgs cv_bridge image_transport ament_index_cpp mavros_msgs geometry_msgs visualization_msgs)
 target_link_libraries(main ${OpenCV_LIBS})
@@ -42,6 +45,10 @@ target_link_libraries(main ${OpenCV_LIBS})
 add_executable(create_path src/create_path.cpp)
 ament_target_dependencies(create_path rclcpp std_msgs sensor_msgs cv_bridge image_transport ament_index_cpp mavros_msgs geometry_msgs rosbag2_cpp rosbag2_storage rosbag2_transport)
 target_link_libraries(create_path ${OpenCV_LIBS})
+
+add_executable(benchmark_features src/benchmark_features.cpp)
+ament_target_dependencies(benchmark_features rclcpp std_msgs sensor_msgs cv_bridge image_transport ament_index_cpp mavros_msgs geometry_msgs rosbag2_cpp rosbag2_storage rosbag2_transport)
+target_link_libraries(benchmark_features ${OpenCV_LIBS})
 
 # drone_control is commented out - source files moved to drone_control_(unused)
 # add_executable(drone_control 
@@ -52,6 +59,7 @@ target_link_libraries(create_path ${OpenCV_LIBS})
 install(TARGETS
   main
   create_path
+  benchmark_features
   DESTINATION lib/${PROJECT_NAME}
 )
 
